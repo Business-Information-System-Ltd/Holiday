@@ -41,6 +41,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
+  csc_picker_plus:
+    dependency: "direct main"
+    description:
+      name: csc_picker_plus
+      sha256: "105e1989dd7462a504d60af024880918bb2936dbb9c97f46c4bd4923fe011411"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.3"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -75,6 +83,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      sha256: "3df61194eb431efc39c4ceba583b95633a403f46c9fd341e550ce0bfa50e9aa5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.20.2"
   leak_tracker:
     dependency: transitive
     description:
