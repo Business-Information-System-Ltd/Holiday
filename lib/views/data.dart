@@ -26,8 +26,8 @@ class Holiday{
   factory Holiday.fromJson(Map<String, dynamic> json){
     return Holiday(
         id: json['id'], 
-        date:json['date'], 
-        name: json['name'],
+        date:json['date'] , 
+        name: json['name'] ,
         type: json['type'],
         recurring:json['recurring'], 
         countryCode: json['country_code'], 
@@ -49,5 +49,33 @@ class Holiday{
       'created_at':createdAt,
       'updated_at':updatedAt,
     };
+  }
+}
+
+class Country{
+  final int id;
+  final String countryCode;
+  final String counntryName;
+  
+
+  const Country(
+    {
+      required this.id,
+      required this.countryCode,
+      required this.counntryName
+    }
+  );
+  Map<String, dynamic> toJson(){
+    return {
+      'ID':id,
+      'Country_Code':countryCode,
+      'Country_Name':counntryName
+    };
+  }
+  factory Country.fromJson(Map<String, dynamic> json){
+    return Country(
+      id: json['ID'],
+      countryCode: json['countryCode'], 
+      counntryName: json['counntryName']);
   }
 }

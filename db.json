@@ -44,5 +44,22 @@
       "created_at": "2024-06-10T12:00:00Z",
       "updated_at": "2024-06-10T12:00:00Z"
     }
+  ],
+  "countries": [
+    {
+      "id": "1",
+      "Country_code": "MM",
+      "Country_name": "Yangon"
+    },
+    {
+      "id": "2",
+      "Country_code": "JP",
+      "Country_name": "Japan"
+    },
+    {
+      "id": "3",
+      "Country_code": "UK",
+      "Country_name": "United Kingdom"
+    }
   ]
 }
