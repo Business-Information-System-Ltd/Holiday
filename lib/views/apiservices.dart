@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:holiday/views/data.dart';
 import 'package:http/http.dart' as http;
 
-class HolidayApiService{
+class ApiService{
     final String baseUrl = 'http://localhost:3000';
     final String holidayEndPoint = "http://localhost:3000/holidays";
     final String countryEndPoint ="http://localhost:3000/countries";
@@ -103,7 +103,7 @@ Future<List<Holiday>> getHolidayInRange(String start, String end) async {
     }
   }
   //Country
-   Future<List<Country>> fetchDepartment() async {
+   Future<List<Country>> fetchCountry() async {
     final response = await http.get(Uri.parse(countryEndPoint));
     if (response.statusCode == 200) {
       List<dynamic> body = json.decode(response.body);
