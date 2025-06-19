@@ -55,27 +55,28 @@ class Holiday{
 class Country{
   final int id;
   final String countryCode;
-  final String counntryName;
+  final String countryName;
   
 
   const Country(
     {
       required this.id,
       required this.countryCode,
-      required this.counntryName
+      required this.countryName
     }
   );
   Map<String, dynamic> toJson(){
     return {
-      'ID':id,
-      'Country_Code':countryCode,
-      'Country_Name':counntryName
+      'id':id,
+      'Country_code':countryCode,
+      'Country_name':countryName
     };
   }
+ 
   factory Country.fromJson(Map<String, dynamic> json){
     return Country(
-      id: json['ID'],
-      countryCode: json['countryCode'], 
-      counntryName: json['counntryName']);
+       id: int.parse(json['id'].toString()),
+      countryCode: json['Country_code'] ?? '' , 
+      countryName: json['Country_name'] ?? '');
   }
 }
