@@ -1,7 +1,7 @@
 //import 'package:flutter/material.dart';
 
 class Holiday{
-  final int id;
+  final String id;
   final String date;
   final String name;
   final String type;
@@ -25,15 +25,15 @@ class Holiday{
 
   factory Holiday.fromJson(Map<String, dynamic> json){
     return Holiday(
-        id: json['id'], 
-        date:json['date'] , 
-        name: json['name'] ,
-        type: json['type'],
-        recurring:json['recurring'], 
-        countryCode: json['country_code'], 
-        region:json['region'], 
-        createdAt: json['created_at'], 
-        updatedAt:json['updated_at'],
+        id: json['id'] ?? '1', 
+        date:json['date'] ?? '2025', 
+        name: json['name'] ?? 'hh',
+        type: json['type'] ?? 'jj',
+        recurring:json['recurring'] ?? false, 
+        countryCode: json['country_code'] ?? 'mm', 
+        region:json['region']?? 'hn', 
+        createdAt: json['created_at']?? '', 
+        updatedAt:json['updated_at']?? '',
         );
   }
 
@@ -53,7 +53,7 @@ class Holiday{
 }
 
 class Country{
-  final int id;
+  final String id;
   final String countryCode;
   final String countryName;
   
@@ -75,7 +75,8 @@ class Country{
  
   factory Country.fromJson(Map<String, dynamic> json){
     return Country(
-       id: int.parse(json['id'].toString()),
+      id: json['id'] ,
+      //  id: int.parse(json['id'].toString()),
       countryCode: json['Country_code'] ?? '' , 
       countryName: json['Country_name'] ?? '');
   }
