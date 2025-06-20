@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:holiday/views/apiservices.dart';
 import 'package:holiday/views/data.dart';
 import 'package:http/http.dart' as http;
@@ -34,12 +32,14 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
   final _formkey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _regionController = TextEditingController();
   String? _selectedCountryId;
-  // String? _selectedCountryName;
+  String? _selectedCountryName;
 
   var CSCPickerPlus;
   String stateValue = '';
   String? countryValue;
+  
 
   @override
   void initState() {
@@ -56,6 +56,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
       });
     } catch (e) {}
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +73,8 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
         child: Form(
           key: _formkey,
           child: Container(
-            width: MediaQuery.of(context).size.width / 2,
-            height: MediaQuery.of(context).size.height / 1.4,
+            width: MediaQuery.of(context).size.width / 1.9,
+            height: MediaQuery.of(context).size.height / 1.3,
 
             padding: EdgeInsets.all(20),
             margin: EdgeInsets.all(16),
@@ -89,7 +90,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
                   style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
               
-                SizedBox(height: 30),
+                SizedBox(height: 40),
                 Row(
                       children: [
 
@@ -97,7 +98,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
                         child: _buildNameTextField("Holiday Name", _nameController),
                 )], 
                     ),
-                SizedBox(height: 30),
+                SizedBox(height: 40),
 
                 // Date and Country
                 Row(
@@ -116,7 +117,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 40),
 
                 Row(
                   children: [
@@ -134,17 +135,11 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
                     SizedBox(width: 20),
 
                     Expanded(
-                      child: _buildRegionTextField(
-                        "RegionTextField",
-                        selectedRegion,
-                        (val) {
-                          setState(() => selectedRegion = val);
-                        },
+                      child: _buildRegionTextField("RegionTextField",_regionController),
                       ),
-                    ),
                   ],
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 40),
                 // Padding(
                   // padding: const EdgeInsets.only(left: 250),
                  Center(
@@ -169,7 +164,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
                     ),
                   ),
                 //),
-                      SizedBox(width: 30,height: 30),
+                      SizedBox(width: 20,height: 20),
 
                 // Buttons
                 Row(
@@ -185,7 +180,13 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
                     SizedBox(width: 80),
                     ElevatedButton(
                       onPressed: () {
-                        _submitHoliday();
+                       if(_formkey.currentState!.validate()){
+                         _submitHoliday();
+                      }else{
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Please fill all required fields")),
+                        );
+                      }
                       },
                       child: Text("Submit"),
                       style: ElevatedButton.styleFrom(
@@ -209,8 +210,14 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
         fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
       ),
-    );
-  }
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a holiday name';
+              }
+              return null;
+            },
+          );
+        }
 
   Widget _buildDateField() {
     return TextFormField(
@@ -231,13 +238,18 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
           lastDate: DateTime(2100),
         );
         if (picked != null) {
-          String formattedDate = DateFormat('dd-MM-yyyy').format(picked);
+          String formattedDate = DateFormat('yyyy-MM-dd').format(picked);
           setState(() {
             _dateController.text = formattedDate;
           });
         } 
-      },
-    );
+        validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please select a date';
+              }
+              return null;
+      };
+      });
   }
   Widget _buildSelectType(
     String label,
@@ -260,6 +272,12 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
         fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
       ),
+      validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please select holiday type';
+              }
+              return null;
+            },
     );
   }
    Widget _buildSelectCountry(
@@ -276,12 +294,13 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
             country.countryName,
             style: TextStyle(color: Colors.black),
           ),
-          onTap: () {
-            _selectedCountryId = country.id.toString(); 
-            print(_selectedCountryId);// Store ID
-          }, // <- must use this
-        );
-      }).toList(),
+        );}).toList(),
+      //     onTap: () {
+      //       _selectedCountryId = country.id.toString(); 
+      //       print(_selectedCountryId);// Store ID 
+      //     }, // <- must use this
+      //   );
+      // }).toList(),
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
@@ -289,34 +308,56 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
         fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
       ),
+      validator: (value) {
+              if (value == null) {
+                return 'Please choose country';
+              }
+              return null;
+            },
     );
   }
 
-  Widget _buildRegionTextField(
-    String label,
-    String? value,
-    ValueChanged<String?> onChanged,
-  ) {
+  // Widget _buildRegionTextField(
+  //   String label,
+  //   String? value,
+  //   ValueChanged<String?> onChanged,
+  // ) {
+  //   return TextFormField(
+  //     decoration: InputDecoration(
+  //       labelText: label,
+  //       filled: true,
+  //       fillColor: Colors.white,
+  //       border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
+  //     ),
+  //   );
+  // }
+  Widget _buildRegionTextField(String label, TextEditingController controller) {
     return TextFormField(
+      controller: controller,
       decoration: InputDecoration(
         labelText: label,
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
       ),
-    );
-  }
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please filled the region';
+              }
+              return null;
+            },
+          );
+        }
 
   Future<void> _submitHoliday() async {
-    final String apiUrl = "http://localhost:3000/api/holidays/";
-
+    final String apiUrl = "http://localhost:3000/holidays";
     final Map<String, dynamic> holidayJson = {
       'date': _dateController.text, 
       'name': _nameController.text,
       'type': selectedType ?? '',
       'recurring': repeat,
       'country_code': selectedCountry?.countryCode ?? '',
-      'region': selectedRegion ?? '',
+      'region': _regionController.text,
     };
 
     try {
@@ -345,3 +386,4 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
     }
   }
 }
+

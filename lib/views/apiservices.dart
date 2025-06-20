@@ -9,8 +9,8 @@ class ApiService{
     final String countryEndPoint ="http://localhost:3000/countries";
 
 //Get All Holidays
-Future<List<Holiday>> fetchHoildays() async {
-    final response = await http.get(Uri.parse(holidayEndPoint));
+Future<List<Holiday>> fetchHolidays() async {
+    final response = await http.get(Uri.parse("http://localhost:3000/holidays"));
     if(response.statusCode == 200){
         final List<dynamic> jsonList = jsonDecode(response.body);
         return jsonList.map((json)=> Holiday.fromJson(json)).toList();
@@ -96,12 +96,32 @@ Future<List<Holiday>> getHolidayInRange(String start, String end) async {
       throw Exception('Failed to update holiday');
     }
   }
-  Future<void> deleteHoliday(int id) async {
-    final response = await http.delete(Uri.parse('$holidayEndPoint/$id'));
-    if (response.statusCode != 200 && response.statusCode != 204) {
-      throw Exception('Failed to delete holiday');
+  // Future<void> deleteHoliday(int id) async {
+  //   final response = await http.delete(Uri.parse('$holidayEndPoint/$id'));
+  //   if (response.statusCode != 200 && response.statusCode != 204) {
+  //     throw Exception('Failed to delete holiday');
+  //   }
+  // }
+  Future<bool> deleteHolidayByName(String name) async {
+  try {
+    final queryUrl = Uri.parse('http://localhost:3000/holidays?name=$name');
+    final response = await http.get(queryUrl);
+
+    if (response.statusCode == 200) {
+      final List holidays = jsonDecode(response.body);
+      if (holidays.isNotEmpty) {
+        final id = holidays[0]['id'];
+        final deleteUrl = Uri.parse('http://localhost:3000/holidays/$id');
+        final deleteResponse = await http.delete(deleteUrl);
+        return deleteResponse.statusCode == 200;
+      }
     }
+    return false;
+  } catch (e) {
+    print("Delete error: $e");
+    return false;
   }
+}
   //Country
    Future<List<Country>> fetchCountry() async {
     final response = await http.get(Uri.parse(countryEndPoint));
@@ -146,4 +166,24 @@ Future<List<Holiday>> getHolidayInRange(String start, String end) async {
     }
   }
 
+}
+Future<bool> deleteHolidayByName(String name) async {
+  try {
+    final queryUrl = Uri.parse('http://localhost:3000/holidays?name=$name');
+    final response = await http.get(queryUrl);
+
+    if (response.statusCode == 200) {
+      final List holidays = jsonDecode(response.body);
+      if (holidays.isNotEmpty) {
+        final id = holidays[0]['id'];
+        final deleteUrl = Uri.parse('http://localhost:3000/holidays/$id');
+        final deleteResponse = await http.delete(deleteUrl);
+        return deleteResponse.statusCode == 200;
+      }
+    }
+    return false;
+  } catch (e) {
+    print("Delete error: $e");
+    return false;
+  }
 }
