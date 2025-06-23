@@ -5,7 +5,7 @@
       "date": "2025-06-21 00:00:00.000",
       "name": "national holiday",
       "type": "Public",
-      "recurring": true,
+      "recurring": false,
       "country_code": "UK",
       "region": "england",
       "created_at": "",

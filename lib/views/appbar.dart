@@ -15,20 +15,14 @@ class MainScaffold extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 104, 217, 236),
         title: Center(child: Text(title, style: const TextStyle(fontSize: 24))),
-       // actions: const [Icon(Icons.person_outline)],
       ),
       drawer: Drawer(
-        
         child: ListView(
           padding: const EdgeInsets.all(8.0),
-          
+
           children: [
             const DrawerHeader(
-              // decoration: BoxDecoration(
-              //   color: Color.fromARGB(255, 104, 217, 236),
-              // ),
-              child: Text('Menu', style: TextStyle(fontSize: 24),
-              ),
+              child: Text('Menu', style: TextStyle(fontSize: 24)),
             ),
             ListTile(
               leading: Icon(Icons.add),

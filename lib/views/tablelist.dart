@@ -14,11 +14,11 @@ class Tablelist extends StatefulWidget {
 class TablelistState extends State<Tablelist> {
   TextEditingController _searchController = TextEditingController();
   late List<PlutoColumn> columns;
-  late List<PlutoRow> rows;
+  List<PlutoRow> rows = [];
+  List<PlutoRow> filteredRows = [];
   List<Holiday> holidays = [];
   List<Holiday> filterData = [];
   List<Country> countries = [];
-
   bool isLoading = true;
   late BuildContext _context;
   PlutoGridStateManager? stateManager;
@@ -26,17 +26,29 @@ class TablelistState extends State<Tablelist> {
   void initState() {
     super.initState();
     initColumn();
-    fetchData();
+    _loadHolidays();
+    _loadInitialData();
+  }
+
+  Future<void> _loadInitialData() async {
+    try {
+      countries = await ApiService().fetchCountry();
+      await _loadHolidays();
+    } catch (e) {
+      print("Error loading initial data: $e");
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 
   void initColumn() {
     columns = [
       PlutoColumn(
-  title: 'ID',
-  field: 'id',
-  type: PlutoColumnType.text(),
-  hide: true,
-),
+        title: 'ID',
+        field: 'id',
+        type: PlutoColumnType.text(),
+        hide: true,
+      ),
 
       PlutoColumn(
         title: 'Date',
@@ -51,7 +63,11 @@ class TablelistState extends State<Tablelist> {
         width: 500,
       ),
 
-      PlutoColumn(title: 'Type', field: 'type', type: PlutoColumnType.text()),
+      PlutoColumn(
+        title: 'Type', 
+        field: 'type',
+        type: PlutoColumnType.text(),
+      ),
       PlutoColumn(
         title: 'Country',
         field: 'country',
@@ -106,7 +122,8 @@ class TablelistState extends State<Tablelist> {
       ),
     ];
   }
-//Edit
+
+  //Edit
   void _showEditDialog(PlutoRow row) {
     final TextEditingController nameController = TextEditingController(
       text: row.cells['name']!.value,
@@ -134,7 +151,7 @@ class TablelistState extends State<Tablelist> {
             padding: const EdgeInsets.all(20),
             child: Container(
               width: MediaQuery.of(context).size.width / 3,
-              height: MediaQuery.of(context).size.height /2,
+              height: MediaQuery.of(context).size.height / 2,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
 
@@ -328,44 +345,47 @@ class TablelistState extends State<Tablelist> {
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        onPressed: () async{
-                           final updatedHoliday = Holiday(
-                          id: row.cells['id']!.value,
-                          name: nameController.text,
-                          type: selectedType,
-                          region: regionController.text,
-                          countryCode: selectedCountryCode,
-                          date: selectedDate.toString(),
-                          recurring: isRecurring,
-                           createdAt: '', 
-                           updatedAt: '',
-                        );
-                        try {
-                          final result = await ApiService().updateHoliday(updatedHoliday);
-                          
-                          setState(() {
-                            row.cells['name']!.value = nameController.text;
-                            row.cells['type']!.value = selectedType;
-                            row.cells['country']!.value = selectedCountryCode;
-                            row.cells['region']!.value = regionController.text;
-                            row.cells['date']!.value = selectedDate
-                                ?.toIso8601String()
-                                .split('T')[0];
-                            row.cells['repeat']!.value = isRecurring.toString();
-
-                            stateManager?.notifyListeners();
-                          });
-
-                           Navigator.pop(context);
-                        } catch (e) {
-                          
-                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Failed to update: $e')),
+                        onPressed: () async {
+                          final updatedHoliday = Holiday(
+                            id: row.cells['id']!.value,
+                            name: nameController.text,
+                            type: selectedType,
+                            region: regionController.text,
+                            countryCode: selectedCountryCode,
+                            date: selectedDate.toString(),
+                            recurring: isRecurring,
+                            createdAt: '',
+                            updatedAt: '',
                           );
-                      
-                        }
+                          try {
+                            // ignore: unused_local_variable
+                            final result = await ApiService().updateHoliday(
+                              updatedHoliday,
+                            );
+
+                            setState(() {
+                              row.cells['name']!.value = nameController.text;
+                              row.cells['type']!.value = selectedType;
+                              row.cells['country']!.value = selectedCountryCode;
+                              row.cells['region']!.value =
+                                  regionController.text;
+                              row.cells['date']!.value = selectedDate
+                                  ?.toIso8601String()
+                                  .split('T')[0];
+                              row.cells['repeat']!.value = isRecurring
+                                  .toString();
+
+                              stateManager?.notifyListeners();
+                            });
+
+                            Navigator.pop(context);
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Failed to update: $e')),
+                            );
+                          }
                         },
-                        
+
                         child: const Text("Submit"),
                       ),
                     ],
@@ -378,167 +398,154 @@ class TablelistState extends State<Tablelist> {
       },
     );
   }
-//Search
-  void _searchData(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        filterData = List.from(holidays);
-      } else {
-        filterData = holidays.where((data) {
-          final date = data.date.toLowerCase();
-          final name = data.name.toLowerCase();
-          final type = data.type.toLowerCase();
-          final country = data.countryCode.toString().toLowerCase();
-          final region = (data.region ?? '').toLowerCase();
-          final repeat = data.recurring.toString().toLowerCase();
-          final searchLower = query.toLowerCase();
 
-          return date.contains(searchLower) ||
-              name.contains(searchLower) ||
-              type.contains(searchLower) ||
-              country.contains(searchLower) ||
-              region.contains(searchLower) ||
-              repeat.contains(searchLower);
-        }).toList();
-      }
-      rows = filterData.map((h) {
-        return PlutoRow(
-          cells: {
-            'id': PlutoCell(value: h.id),
+  // Delete
+  void _showDeleteDialog(PlutoRow row) {
+    showDialog(
+      context: _context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color.fromARGB(255, 93, 96, 98),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            "Confirm Delete",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          content: Text(
+            "Are you sure you want to delete?",
+            style: const TextStyle(color: Colors.white),
+          ),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: Colors.blue),
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              onPressed: () async {
+                try {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) =>
+                        const Center(child: CircularProgressIndicator()),
+                  );
 
-            'date': PlutoCell(value: h.date),
-            'name': PlutoCell(value: h.name),
-            'type': PlutoCell(value: h.type),
-            'country': PlutoCell(value: h.countryCode),
-            'region': PlutoCell(value: h.region ?? ''),
-            'repeat': PlutoCell(value: h.recurring.toString()),
-            'actions': PlutoCell(value: ''),
-          },
+                  await deleteHoliday(row.cells['id']!.value.toString());
+
+                  stateManager?.removeRows([row]);
+
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        '${row.cells['name']?.value} deleted successfully',
+                      ),
+                      backgroundColor: const Color.fromARGB(255, 241, 245, 241),
+                    ),
+                  );
+                } catch (e) {
+                  Navigator.pop(context); //
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to delete: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
         );
-      }).toList();
-    });
+      },
+    );
   }
 
-  Future<void> fetchData() async {
-    try {
-      List<Holiday> holiday = await ApiService().fetchHolidays();
-      setState(() {
-        holidays = holiday;
-        filterData = List.from(holidays);
-        rows = filterData
-            .map(
-              (h) => PlutoRow(
-                cells: {
-                  'id': PlutoCell(value: h.id),
+  Future<void> deleteHoliday(String id) async {
+    await ApiService().deleteHoliday(id);
+  }
 
-                  'date': PlutoCell(value: h.date),
-                  'name': PlutoCell(value: h.name),
-                  'type': PlutoCell(value: h.type),
-                  'country': PlutoCell(value: h.countryCode),
-                  'region': PlutoCell(value: h.region ?? ''),
-                  'repeat': PlutoCell(value: h.recurring.toString()),
-                  'actions': PlutoCell(value: ''),
-                },
-              ),
-            )
-            .toList();
-        isLoading = false;
+  Future<void> _loadHolidays() async {
+    try {
+      final holidayList = await ApiService().fetchHolidays();
+      setState(() {
+        holidays = holidayList;
+        rows = holidayList.map((holiday) {
+          final dateString = holiday.date;
+          final formattedDate = dateString.contains('T')
+              ? dateString.split('T')[0]
+              : dateString;
+          return PlutoRow(
+            cells: {
+              'id': PlutoCell(value: holiday.id),
+              'date': PlutoCell(value: formattedDate),
+              'name': PlutoCell(value: holiday.name),
+
+              'type': PlutoCell(value: holiday.type),
+              'country': PlutoCell(value: holiday.countryCode),
+              'region': PlutoCell(value: holiday.region ?? ''),
+
+              'repeat': PlutoCell(value: holiday.recurring.toString()),
+              'actions': PlutoCell(value: ''),
+            },
+          );
+        }).toList();
+        print("Holidays fetched: ${holidayList.length}");
+        filteredRows = List.from(rows);
       });
     } catch (e) {
-      print('Error fetching data: $e');
-      
+      print("Error loading holidays: $e");
     }
   }
 
+  void _searchData(String query) {
+    if (stateManager == null) return;
 
-// Delete
-void _showDeleteDialog(PlutoRow row) {
-  showDialog(
-    context: _context,
-    builder: (context) {
-      return AlertDialog(
-        backgroundColor: const Color.fromARGB(255, 93, 96, 98),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Text(
-          "Confirm Delete",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        content: Text(
-          "Are you sure you want to delete?",
-          style: const TextStyle(color: Colors.white),
-          
-        ),
-        actions: [
-          TextButton(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.blue,
-          ),
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-            
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
-            onPressed: () async {
-              try {
-                
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                );
-                
-                await deleteHoliday(row.cells['id']!.value.toString());
-                
-                stateManager?.removeRows([row]);
-                
-                
-               Navigator.pop(context);
-                Navigator.pop(context); 
-                
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${row.cells['name']?.value} deleted successfully'),
-                    backgroundColor: const Color.fromARGB(255, 241, 245, 241),
-                  ),
-                );
-              } catch (e) {
-                Navigator.pop(context); // 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Failed to delete: $e'),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
-            child: const Text('Delete', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      );
-    },
-  );
-}
+    stateManager!.setFilter((row) {
+      if (query.isEmpty) return true;
 
-// Add this method to call the API service for deleting a holiday
-Future<void> deleteHoliday(String id) async {
-  await ApiService().deleteHoliday(id);
-}
-
+      final lowerQuery = query.toLowerCase();
+      return row.cells['name']!.value.toString().toLowerCase().contains(
+            lowerQuery,
+          ) ||
+          row.cells['type']!.value.toString().toLowerCase().contains(
+            lowerQuery,
+          ) ||
+          row.cells['country']!.value.toString().toLowerCase().contains(
+            lowerQuery,
+          ) ||
+          row.cells['region']!.value.toString().toLowerCase().contains(
+            lowerQuery,
+          ) ||
+          row.cells['date']!.value.toString().toLowerCase().contains(
+            lowerQuery,
+          ) ||
+          row.cells['repeat']!.value.toString().toLowerCase().contains(
+            lowerQuery,
+          );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     _context = context;
+
+    if (isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
     return MainScaffold(
       title: "Holidays List",
       body: Container(
@@ -550,7 +557,6 @@ Future<void> deleteHoliday(String id) async {
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.4,
                 height: 50,
-                // padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 decoration: BoxDecoration(
                   border: Border.all(
                     color: const Color.fromARGB(255, 14, 12, 12),
@@ -558,7 +564,6 @@ Future<void> deleteHoliday(String id) async {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Row(
-                  //mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.search, color: Colors.black),
@@ -570,15 +575,30 @@ Future<void> deleteHoliday(String id) async {
                       child: TextField(
                         controller: _searchController,
                         onChanged: _searchData,
-                        textAlign: TextAlign.start,
                         decoration: const InputDecoration(
                           hintText: "Search",
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.all(8.0),
                           isCollapsed: true,
                         ),
+                        style: const TextStyle(color: Colors.black),
+                        onSubmitted: (value) {
+                          _searchData(value);
+                        },
                       ),
                     ),
+                    if (_searchController.text.isNotEmpty)
+                      IconButton(
+                        icon: const Icon(
+                          Icons.clear,
+                          color: Colors.black54,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          _searchController.clear();
+                          _searchData('');
+                        },
+                      ),
                   ],
                 ),
               ),
@@ -591,12 +611,9 @@ Future<void> deleteHoliday(String id) async {
                   width: MediaQuery.of(context).size.width,
                   child: PlutoGrid(
                     columns: columns,
-                    rows: rows,
+                    rows: filteredRows,
                     onLoaded: (PlutoGridOnLoadedEvent event) {
                       stateManager = event.stateManager;
-                      if (rows.isEmpty) {
-                        fetchData();
-                      }
                     },
                     onChanged: (PlutoGridOnChangedEvent event) {
                       print(event);
