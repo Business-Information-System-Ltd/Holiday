@@ -102,7 +102,7 @@ Future<List<Holiday>> getHolidayInRange(String start, String end) async {
   //     throw Exception('Failed to delete holiday');
   //   }
   // }
-  Future<bool> deleteHolidayByName(String name) async {
+  Future<bool> deleteHolidayById(String name) async {
   try {
     final queryUrl = Uri.parse('http://localhost:3000/holidays?name=$name');
     final response = await http.get(queryUrl);

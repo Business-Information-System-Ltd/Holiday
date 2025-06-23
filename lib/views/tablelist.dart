@@ -28,7 +28,7 @@ class __PLutoGridStateState extends State<_PLutoGridState> {
     late List<PlutoColumn> columns;
     late List<PlutoRow> rows;
     List<Holiday> holidays=[];
-    PlutoGridStateManager? stateManager;
+      PlutoGridStateManager? stateManager;
    @override
    void initState() {
    super.initState(); 
@@ -91,14 +91,44 @@ class __PLutoGridStateState extends State<_PLutoGridState> {
                     print("Edit ${row.cells['name']?.value}");
                   },
                 ),
+                // IconButton(
+                //   icon: Icon(Icons.delete, color: Colors.blue),
+                //   onPressed: () {
+                //     final row = rendererContext.row;
+                //     print("Delete ${row.cells['name']?.value}");
+                //     rendererContext.stateManager.removeRows([row]);
+                //   },
+                // ),
                 IconButton(
-                  icon: Icon(Icons.delete, color: Colors.blue),
-                  onPressed: () {
-                    final row = rendererContext.row;
-                    print("Delete ${row.cells['name']?.value}");
-                    rendererContext.stateManager.removeRows([row]);
-                  },
-                ),
+  icon: Icon(Icons.delete, color: Colors.blue),
+  onPressed: () async {
+    final row = rendererContext.row;
+    final int id = row.cells['id']!.value;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("Confirm Delete"),
+        content: Text("Are you sure you want to delete this item?"),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text("Cancel")),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text("Delete")),
+        ],
+      ),
+    );
+
+   if (confirm == true) {
+  bool success = await ApiService().;
+      if (success) {
+        rendererContext.stateManager.removeRows([row]);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Deleted")));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Delete failed")));
+      }
+    }
+  },
+),
+
               ],
             );
           },
@@ -135,6 +165,7 @@ class __PLutoGridStateState extends State<_PLutoGridState> {
         rows= holiday.map((h){
           return PlutoRow(
             cells: {
+              'id':PlutoCell(value: h.id),
               'name':PlutoCell(value:h.name),
               'date':PlutoCell(value:h.date),
               'type':PlutoCell(value:h.type),
