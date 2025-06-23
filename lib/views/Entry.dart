@@ -346,6 +346,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
       'recurring': repeat,
       'country_code': selectedCountry?.countryCode ?? '',
       'region': _regionController.text,
+    
     };
 
     try {
