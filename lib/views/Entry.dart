@@ -1,28 +1,30 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:holiday/main.dart';
 import 'package:holiday/views/apiservices.dart';
+import 'package:holiday/views/appbar.dart';
 import 'package:holiday/views/data.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-void main() => runApp(MyApp());
+// void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: AddHolidayPage(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: AddHolidayPage(),
+//       debugShowCheckedModeBanner: false,
+//     );
+//   }
+// }
 
 class AddHolidayPage extends StatefulWidget {
   @override
   _AddHolidayPageState createState() => _AddHolidayPageState();
 }
 
-class _AddHolidayPageState extends State<AddHolidayPage> {
+class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProviderStateMixin {
   DateTime? selectedDate;
   Country? selectedCountry;
   String? selectedRegion;
@@ -33,8 +35,10 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _regionController = TextEditingController();
-  String? _selectedCountryId;
-  String? _selectedCountryName;
+  // String? _selectedCountryId;
+  // String? _selectedCountryName;
+  late AnimationController controller;
+  bool isMenuBar = false;
 
   var CSCPickerPlus;
   String stateValue = '';
@@ -45,7 +49,10 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
   void initState() {
     super.initState();
     _fetchData();
+   
+      
   }
+  
 
   void _fetchData() async {
     try {
@@ -56,18 +63,16 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
       });
     } catch (e) {}
   }
+
+  
   
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFF678B96),
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 104, 217, 236),
-        title: Center(child: Text("Holiday", style: TextStyle(fontSize: 24))),
-        actions: [Icon(Icons.person_outline)],
-        leading: Icon(Icons.menu),
-      ),
+    return MainScaffold(
+      
+    title: "Add Holiday",
+
 
       body: Center(
         child: Form(
@@ -182,6 +187,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
                       onPressed: () {
                        if(_formkey.currentState!.validate()){
                          _submitHoliday();
+                         
                       }else{
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text("Please fill all required fields")),
@@ -243,7 +249,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
             _dateController.text = formattedDate;
           });
         } 
-        validator: (value) {
+        (value) {
               if (value == null || value.isEmpty) {
                 return 'Please select a date';
               }
@@ -295,12 +301,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
             style: TextStyle(color: Colors.black),
           ),
         );}).toList(),
-      //     onTap: () {
-      //       _selectedCountryId = country.id.toString(); 
-      //       print(_selectedCountryId);// Store ID 
-      //     }, // <- must use this
-      //   );
-      // }).toList(),
+     
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
@@ -317,20 +318,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
     );
   }
 
-  // Widget _buildRegionTextField(
-  //   String label,
-  //   String? value,
-  //   ValueChanged<String?> onChanged,
-  // ) {
-  //   return TextFormField(
-  //     decoration: InputDecoration(
-  //       labelText: label,
-  //       filled: true,
-  //       fillColor: Colors.white,
-  //       border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
-  //     ),
-  //   );
-  // }
+  
   Widget _buildRegionTextField(String label, TextEditingController controller) {
     return TextFormField(
       controller: controller,
@@ -366,7 +354,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(holidayJson),
       );
-
+      Navigator.pop(context,true);
       if (response.statusCode == 201 || response.statusCode == 200) {
         print("Success: ${response.body}");
         ScaffoldMessenger.of(

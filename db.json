@@ -109,6 +109,24 @@
       "recurring": true,
       "country_code": "MM",
       "region": "Yangon"
+    },
+    {
+      "id": "0596",
+      "date": "2025-06-02",
+      "name": "AA",
+      "type": "Religious",
+      "recurring": true,
+      "country_code": "MM",
+      "region": "Bagan"
+    },
+    {
+      "id": "77bc",
+      "date": "2025-06-09",
+      "name": "BB",
+      "type": "Religious",
+      "recurring": true,
+      "country_code": "MM",
+      "region": "Inlay"
     }
   ],
   "countries": [
