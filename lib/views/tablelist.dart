@@ -14,7 +14,7 @@ class Tablelist extends StatefulWidget {
 class TablelistState extends State<Tablelist> {
   TextEditingController _searchController = TextEditingController();
   late List<PlutoColumn> columns;
-  late List<PlutoRow> rows ;
+  late List<PlutoRow> rows;
   List<Holiday> holidays = [];
   List<Holiday> filterData = [];
   bool isLoading = true;
@@ -28,24 +28,37 @@ class TablelistState extends State<Tablelist> {
 
   void initColumn() {
     columns = [
-      PlutoColumn(title: 'Date', field: 'date', type: PlutoColumnType.date()),
-      PlutoColumn(title: 'Name', field: 'name', type: PlutoColumnType.text()),
+      PlutoColumn(
+        title: 'Date',
+        field: 'date',
+        type: PlutoColumnType.date(),
+        width: 150,
+      ),
+      PlutoColumn(
+        title: 'Name',
+        field: 'name',
+        type: PlutoColumnType.text(),
+        width: 500,
+      ),
 
       PlutoColumn(title: 'Type', field: 'type', type: PlutoColumnType.text()),
       PlutoColumn(
         title: 'Country',
         field: 'country',
         type: PlutoColumnType.text(),
+        width: 200,
       ),
       PlutoColumn(
         title: 'Region',
         field: 'region',
         type: PlutoColumnType.text(),
+        width: 150,
       ),
       PlutoColumn(
         title: 'Repeat',
         field: 'repeat',
         type: PlutoColumnType.text(),
+        width: 150,
       ),
       PlutoColumn(
         title: 'Actions',
@@ -66,6 +79,7 @@ class TablelistState extends State<Tablelist> {
                   print("Edit ${row.cells['name']?.value}");
                 },
               ),
+              SizedBox(width: 20,),
               IconButton(
                 icon: Icon(Icons.delete, color: Colors.blue),
                 onPressed: () {
@@ -83,11 +97,10 @@ class TablelistState extends State<Tablelist> {
 
   void _searchData(String query) {
     setState(() {
-
       if (query.isEmpty) {
-    filterData = List.from(holidays); 
-         } else {
-         filterData = holidays.where((data) {
+        filterData = List.from(holidays);
+      } else {
+        filterData = holidays.where((data) {
           final date = data.date.toLowerCase();
           final name = data.name.toLowerCase();
           final type = data.type.toLowerCase();
@@ -120,38 +133,41 @@ class TablelistState extends State<Tablelist> {
     });
   }
 
-  
- Future <void> fetchData() async {
-  try {
-    List<Holiday> holiday = await ApiService().fetchHolidays();
-    setState(() {
-      holidays = holiday;
-      filterData = List.from(holidays);
-      rows = filterData.map((h) => PlutoRow(
-        cells: {
-          'date': PlutoCell(value: h.date),
-          'name': PlutoCell(value: h.name),
-          'type': PlutoCell(value: h.type),
-          'country': PlutoCell(value: h.countryCode),
-          'region': PlutoCell(value: h.region ?? ''),
-          'repeat': PlutoCell(value: h.recurring.toString()),
-          'actions': PlutoCell(value: ''),
-        },
-      )).toList();
-       isLoading = false;
-    });
-  } catch (e) {
-    print('Error fetching data: $e');
-    // Optionally show error to user
+  Future<void> fetchData() async {
+    try {
+      List<Holiday> holiday = await ApiService().fetchHolidays();
+      setState(() {
+        holidays = holiday;
+        filterData = List.from(holidays);
+        rows = filterData
+            .map(
+              (h) => PlutoRow(
+                cells: {
+                  'date': PlutoCell(value: h.date),
+                  'name': PlutoCell(value: h.name),
+                  'type': PlutoCell(value: h.type),
+                  'country': PlutoCell(value: h.countryCode),
+                  'region': PlutoCell(value: h.region ?? ''),
+                  'repeat': PlutoCell(value: h.recurring.toString()),
+                  'actions': PlutoCell(value: ''),
+                },
+              ),
+            )
+            .toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching data: $e');
+      // Optionally show error to user
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return MainScaffold(
       title: "Holidays List",
       body: Container(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             Padding(
@@ -194,21 +210,24 @@ class TablelistState extends State<Tablelist> {
             ),
             SizedBox(height: 20),
             Expanded(
-              child: Container(
-                width: MediaQuery.of(context).size.width * 1.2,
-                child: PlutoGrid(
-                  columns: columns,
-                  rows: rows,
-                  onLoaded: (PlutoGridOnLoadedEvent event) {
-                    stateManager = event.stateManager;
-                    if (rows.isEmpty) {
-      fetchData();
-    }
-                  },
-                  onChanged: (PlutoGridOnChangedEvent event) {
-                    print(event);
-                  },
-                  configuration: const PlutoGridConfiguration(),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  child: PlutoGrid(
+                    columns: columns,
+                    rows: rows,
+                    onLoaded: (PlutoGridOnLoadedEvent event) {
+                      stateManager = event.stateManager;
+                      if (rows.isEmpty) {
+                        fetchData();
+                      }
+                    },
+                    onChanged: (PlutoGridOnChangedEvent event) {
+                      print(event);
+                    },
+                    configuration: const PlutoGridConfiguration(),
+                  ),
                 ),
               ),
             ),

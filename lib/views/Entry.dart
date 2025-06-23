@@ -354,7 +354,7 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
         headers: {"Content-Type": "application/json"},
         body: jsonEncode(holidayJson),
       );
-      Navigator.pop(context,true);
+      Navigator.pop(context);
       if (response.statusCode == 201 || response.statusCode == 200) {
         print("Success: ${response.body}");
         ScaffoldMessenger.of(

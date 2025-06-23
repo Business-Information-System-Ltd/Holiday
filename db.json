@@ -127,6 +127,24 @@
       "recurring": true,
       "country_code": "MM",
       "region": "Inlay"
+    },
+    {
+      "id": "f007",
+      "date": "2025-06-01",
+      "name": "CC",
+      "type": "Observance",
+      "recurring": false,
+      "country_code": "UK",
+      "region": "KK"
+    },
+    {
+      "id": "d0f8",
+      "date": "2025-05-07",
+      "name": "KK",
+      "type": "Religious",
+      "recurring": false,
+      "country_code": "UK",
+      "region": "LL"
     }
   ],
   "countries": [
