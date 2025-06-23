@@ -1,114 +1,26 @@
 {
   "holidays": [
     {
-      "id": "4",
-      "date": "2025-12-25",
-      "name": "Christmas Day",
-      "type": "public",
-      "recurring": true,
-      "country_code": "MM",
-      "region": "",
-      "created_at": "2024-06-10T12:00:00Z",
-      "updated_at": "2024-06-10T12:00:00Z"
-    },
-    {
-      "id": "f907",
-      "date": "",
-      "name": "",
-      "type": "",
-      "recurring": false,
-      "country_code": "",
-      "region": ""
-    },
-    {
-      "id": "26be",
-      "date": "2025-05-10",
-      "name": "National Children Day ",
-      "type": "Public",
-      "recurring": true,
-      "country_code": "JP",
-      "region": ""
-    },
-    {
-      "id": "ad35",
-      "date": "2025-05-10",
-      "name": "National Children Day ",
-      "type": "Public",
-      "recurring": true,
-      "country_code": "JP",
-      "region": ""
-    },
-    {
-      "id": "f924",
-      "date": "",
-      "name": "",
-      "type": "",
-      "recurring": false,
-      "country_code": "",
-      "region": ""
-    },
-    {
-      "id": "833a",
-      "date": "",
-      "name": "",
-      "type": "",
-      "recurring": false,
-      "country_code": "",
-      "region": ""
-    },
-    {
-      "id": "48ea",
-      "date": "",
-      "name": "",
-      "type": "",
-      "recurring": false,
-      "country_code": "",
-      "region": ""
-    },
-    {
-      "id": "cd5b",
-      "date": "",
-      "name": "",
-      "type": "",
-      "recurring": false,
-      "country_code": "",
-      "region": ""
-    },
-    {
-      "id": "3a64",
-      "date": "2025-06-24",
-      "name": "Nation day",
-      "type": "Bank",
-      "recurring": true,
-      "country_code": "MM",
-      "region": ""
-    },
-    {
-      "id": "cb8f",
-      "date": "2025-06-10",
-      "name": "Happy Mother's Day",
-      "type": "Public",
-      "recurring": true,
-      "country_code": "UK",
-      "region": ""
-    },
-    {
       "id": "3aed",
-      "date": "2025-06-21",
+      "date": "2025-06-21 00:00:00.000",
       "name": "national holiday",
       "type": "Public",
-      "recurring": false,
+      "recurring": true,
       "country_code": "UK",
-      "region": "england"
+      "region": "england",
+      "created_at": "",
+      "updated_at": ""
     },
     {
       "id": "59ca",
-      "date": "2026-01-01",
+      "date": "2026-01-01 00:00:00.000",
       "name": "Happy New Year",
       "type": "Public",
       "recurring": true,
       "country_code": "MM",
-      "region": "Yangon"
+      "region": "Yangon",
+      "created_at": "",
+      "updated_at": ""
     },
     {
       "id": "0596",
@@ -127,6 +39,24 @@
       "recurring": true,
       "country_code": "MM",
       "region": "Inlay"
+    },
+    {
+      "id": "f007",
+      "date": "2025-06-01",
+      "name": "CC",
+      "type": "Observance",
+      "recurring": false,
+      "country_code": "UK",
+      "region": "KK"
+    },
+    {
+      "id": "d0f8",
+      "date": "2025-05-07",
+      "name": "KK",
+      "type": "Religious",
+      "recurring": false,
+      "country_code": "UK",
+      "region": "LL"
     }
   ],
   "countries": [
