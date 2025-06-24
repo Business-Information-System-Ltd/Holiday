@@ -7,24 +7,13 @@ import 'package:holiday/views/data.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-// void main() => runApp(MyApp());
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: AddHolidayPage(),
-//       debugShowCheckedModeBanner: false,
-//     );
-//   }
-// }
-
 class AddHolidayPage extends StatefulWidget {
   @override
   _AddHolidayPageState createState() => _AddHolidayPageState();
 }
 
-class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProviderStateMixin {
+class _AddHolidayPageState extends State<AddHolidayPage>
+    with SingleTickerProviderStateMixin {
   DateTime? selectedDate;
   Country? selectedCountry;
   String? selectedRegion;
@@ -35,24 +24,18 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _regionController = TextEditingController();
-  // String? _selectedCountryId;
-  // String? _selectedCountryName;
   late AnimationController controller;
   bool isMenuBar = false;
 
   var CSCPickerPlus;
   String stateValue = '';
   String? countryValue;
-  
 
   @override
   void initState() {
     super.initState();
     _fetchData();
-   
-      
   }
-  
 
   void _fetchData() async {
     try {
@@ -64,22 +47,17 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
     } catch (e) {}
   }
 
-  
-  
-
   @override
   Widget build(BuildContext context) {
     return MainScaffold(
-      
-    title: "Add Holiday",
-
+      title: "Add Holiday",
 
       body: Center(
         child: Form(
           key: _formkey,
           child: Container(
-            width: MediaQuery.of(context).size.width / 1.9,
-            height: MediaQuery.of(context).size.height / 1.3,
+            width: MediaQuery.of(context).size.width / 2,
+            height: MediaQuery.of(context).size.height / 1.2,
 
             padding: EdgeInsets.all(20),
             margin: EdgeInsets.all(16),
@@ -94,25 +72,25 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
                   'Add New Holiday',
                   style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
-              
+
                 SizedBox(height: 40),
                 Row(
-                      children: [
-
-                      Expanded(
-                        child: _buildNameTextField("Holiday Name", _nameController),
-                )], 
+                  children: [
+                    Expanded(
+                      child: _buildNameTextField(
+                        "Holiday Name",
+                        _nameController,
+                      ),
                     ),
+                  ],
+                ),
                 SizedBox(height: 40),
 
                 // Date and Country
                 Row(
                   children: [
-                    Expanded(
-                      child: _buildDateField()),
-
+                    Expanded(child: _buildDateField()),
                     SizedBox(width: 20),
-
                     Expanded(
                       child: _buildSelectType("Select Type", selectedType, (
                         val,
@@ -128,48 +106,50 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
                   children: [
                     Expanded(
                       child: _buildSelectCountry(
-                         "Select Country",
-                         selectedCountry, 
-                         (Country? val) {
-                           setState(() {
-                             selectedCountry = val;
-                           });
-                         },
-                       ),
+                        "Select Country",
+                        selectedCountry,
+                        (Country? val) {
+                          setState(() {
+                            selectedCountry = val;
+                          });
+                        },
+                      ),
                     ),
                     SizedBox(width: 20),
 
                     Expanded(
-                      child: _buildRegionTextField("RegionTextField",_regionController),
+                      child: _buildRegionTextField(
+                        "RegionTextField",
+                        _regionController,
                       ),
+                    ),
                   ],
                 ),
                 SizedBox(height: 40),
-                // Padding(
-                  // padding: const EdgeInsets.only(left: 250),
-                 Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                               Text(
-                                  "Repeat:",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w100,
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              
-                              SizedBox(width: 20),
-                              Switch(
-                                value: repeat,
-                                onChanged: (val) => setState(() => repeat = val),
-                                activeColor: const Color.fromARGB(255, 20, 85, 82),
-                              ),
-                        ]
-                    ),
+
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Repeat:",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w100,
+                          fontSize: 18,
+                        ),
+                      ),
+
+                      SizedBox(width: 20),
+                      Switch(
+                        value: repeat,
+                        onChanged: (val) => setState(() => repeat = val),
+                        activeColor: const Color.fromARGB(255, 20, 85, 82),
+                      ),
+                    ],
                   ),
-                //),
-                      SizedBox(width: 20,height: 20),
+                ),
+
+                SizedBox(width: 20, height: 20),
 
                 // Buttons
                 Row(
@@ -185,28 +165,32 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
                     SizedBox(width: 80),
                     ElevatedButton(
                       onPressed: () {
-                       if(_formkey.currentState!.validate()){
-                         _submitHoliday();
-                         
-                      }else{
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Please fill all required fields")),
-                        );
-                      }
+                        if (_formkey.currentState!.validate()) {
+                          _submitHoliday();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Please fill all required fields"),
+                            ),
+                          );
+                        }
                       },
                       child: Text("Submit"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromARGB(255, 218, 237, 247),
                       ),
+
                     ),
                   ],
-                )
-              ])
-              )
-            )
-        )
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
+
   Widget _buildNameTextField(String label, TextEditingController controller) {
     return TextFormField(
       controller: controller,
@@ -216,14 +200,14 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
         fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
       ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a holiday name';
-              }
-              return null;
-            },
-          );
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter a holiday name';
         }
+        return null;
+      },
+    );
+  }
 
   Widget _buildDateField() {
     return TextFormField(
@@ -248,15 +232,17 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
           setState(() {
             _dateController.text = formattedDate;
           });
-        } 
-        (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please select a date';
-              }
-              return null;
-      };
-      });
+        }
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please select a date';
+        }
+        return null;
+      },
+    );
   }
+
   Widget _buildSelectType(
     String label,
     String? value,
@@ -267,7 +253,6 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
       items: ['Public', 'Bank', 'Religious', 'Observance']
           .map((item) => DropdownMenuItem(child: Text(item), value: item))
           .toList(),
-      // onChanged: onChanged,
       onChanged: (val) {
         setState(() => selectedType = val);
         debugPrint('Selected Type: $val');
@@ -279,14 +264,15 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
       ),
       validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please select holiday type';
-              }
-              return null;
-            },
+        if (value == null || value.isEmpty) {
+          return 'Please select holiday type';
+        }
+        return null;
+      },
     );
   }
-   Widget _buildSelectCountry(
+
+  Widget _buildSelectCountry(
     String label,
     Country? selected,
     ValueChanged<Country?> onChanged,
@@ -300,8 +286,9 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
             country.countryName,
             style: TextStyle(color: Colors.black),
           ),
-        );}).toList(),
-     
+        );
+      }).toList(),
+
       onChanged: onChanged,
       decoration: InputDecoration(
         labelText: label,
@@ -310,15 +297,14 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
       ),
       validator: (value) {
-              if (value == null) {
-                return 'Please choose country';
-              }
-              return null;
-            },
+        if (value == null) {
+          return 'Please choose country';
+        }
+        return null;
+      },
     );
   }
 
-  
   Widget _buildRegionTextField(String label, TextEditingController controller) {
     return TextFormField(
       controller: controller,
@@ -328,25 +314,24 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
         fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
       ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please filled the region';
-              }
-              return null;
-            },
-          );
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please filled the region';
         }
+        return null;
+      },
+    );
+  }
 
   Future<void> _submitHoliday() async {
     final String apiUrl = "http://localhost:3000/holidays";
     final Map<String, dynamic> holidayJson = {
-      'date': _dateController.text, 
+      'date': _dateController.text,
       'name': _nameController.text,
       'type': selectedType ?? '',
       'recurring': repeat,
       'country_code': selectedCountry?.countryCode ?? '',
       'region': _regionController.text,
-    
     };
 
     try {
@@ -375,4 +360,3 @@ class _AddHolidayPageState extends State<AddHolidayPage> with SingleTickerProvid
     }
   }
 }
-
