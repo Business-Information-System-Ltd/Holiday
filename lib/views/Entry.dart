@@ -86,7 +86,6 @@ class _AddHolidayPageState extends State<AddHolidayPage>
                 ),
                 SizedBox(height: 40),
 
-                // Date and Country
                 Row(
                   children: [
                     Expanded(child: _buildDateField()),

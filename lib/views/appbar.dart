@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:holiday/views/Entry.dart';
+import 'package:holiday/views/holidaycalendar.dart';
 import 'package:holiday/views/tablelist.dart';
 
 class MainScaffold extends StatelessWidget {
@@ -22,7 +23,19 @@ class MainScaffold extends StatelessWidget {
 
           children: [
             const DrawerHeader(
+                decoration: BoxDecoration(
+    color: Color.fromARGB(255, 104, 217, 236),),
               child: Text('Menu', style: TextStyle(fontSize: 24)),
+            ),
+             ListTile(
+              leading: Icon(Icons.table_chart),
+              title: Text('Calendar'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => HolidayCalendar()),
+                );
+              },
             ),
             ListTile(
               leading: Icon(Icons.add),
