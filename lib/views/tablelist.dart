@@ -32,8 +32,8 @@ class TablelistState extends State<Tablelist> {
   void initColumn() {
     columns = [
       PlutoColumn(
-<<<<<<< HEAD
-=======
+
+
   title: 'ID',
   field: 'id',
   type: PlutoColumnType.text(),
@@ -41,7 +41,7 @@ class TablelistState extends State<Tablelist> {
 ),
 
       PlutoColumn(
->>>>>>> 3483a4cbb538fd8e5f1f37ffe968b3f1bcfd7a7e
+
         title: 'Date',
         field: 'date',
         type: PlutoColumnType.date(),
@@ -89,11 +89,8 @@ class TablelistState extends State<Tablelist> {
                 icon: Icon(Icons.edit, color: Colors.blue),
                 onPressed: () {
                   final row = rendererContext.row;
-<<<<<<< HEAD
 
-=======
                   _showEditDialog(row);
->>>>>>> 3483a4cbb538fd8e5f1f37ffe968b3f1bcfd7a7e
                   print("Edit ${row.cells['name']?.value}");
                 },
               ),
@@ -102,16 +99,10 @@ class TablelistState extends State<Tablelist> {
                 icon: Icon(Icons.delete, color: Colors.blue),
                 onPressed: () async {
                   final row = rendererContext.row;
-<<<<<<< HEAD
-                  _deleteConfirmation(row, rendererContext);
-                  // print("Delete ${row.cells['name']?.value}");
-                  // rendererContext.stateManager.removeRows([row]);
-                 
-=======
                   _showDeleteDialog(row);
                   print("Delete ${row.cells['name']?.value}");
                   rendererContext.stateManager.removeRows([row]);
->>>>>>> 3483a4cbb538fd8e5f1f37ffe968b3f1bcfd7a7e
+
                 },
               ),
             ],
@@ -120,47 +111,9 @@ class TablelistState extends State<Tablelist> {
       ),
     ];
   }
-<<<<<<< HEAD
-void _deleteConfirmation(PlutoRow row, dynamic rendererContext) async{
- final int id = row.cells['id']!.value;
-                  showDialog<bool>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text("Confirm Delete"),
-                      content: Text(
-                        "Are you sure youu want to delete this item?",
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: Text("Cancel"),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: Text("Delete"),
-                        ),
-                      ],
-                    ),
-                  );
-                  if (row != true) return; // Cancel pressed
 
-                  // Call simple delete API
-                  final success = await ApiService().deleteHolidayById('id');
 
-                  if (success) {
-                    rendererContext.stateManager.removeRows([
-                      row,
-                    ]); // Remove from UI
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Deleted Successfully")),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text("Delete Failed")));
-                  }
-}
-=======
+
 //Edit
   void _showEditDialog(PlutoRow row) {
     final TextEditingController nameController = TextEditingController(
@@ -188,8 +141,8 @@ void _deleteConfirmation(PlutoRow row, dynamic rendererContext) async{
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Container(
-              width: MediaQuery.of(context).size.width / 3,
-              height: MediaQuery.of(context).size.height /2,
+              width: MediaQuery.of(context).size.width / 5,
+              height: MediaQuery.of(context).size.height /4,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
 
@@ -434,7 +387,7 @@ void _deleteConfirmation(PlutoRow row, dynamic rendererContext) async{
     );
   }
 //Search
->>>>>>> 3483a4cbb538fd8e5f1f37ffe968b3f1bcfd7a7e
+
   void _searchData(String query) {
     setState(() {
       if (query.isEmpty) {
@@ -461,7 +414,6 @@ void _deleteConfirmation(PlutoRow row, dynamic rendererContext) async{
         return PlutoRow(
           cells: {
             'id': PlutoCell(value: h.id),
-
             'date': PlutoCell(value: h.date),
             'name': PlutoCell(value: h.name),
             'type': PlutoCell(value: h.type),
@@ -485,11 +437,9 @@ void _deleteConfirmation(PlutoRow row, dynamic rendererContext) async{
             .map(
               (h) => PlutoRow(
                 cells: {
-<<<<<<< HEAD
-=======
+
                   'id': PlutoCell(value: h.id),
 
->>>>>>> 3483a4cbb538fd8e5f1f37ffe968b3f1bcfd7a7e
                   'date': PlutoCell(value: h.date),
                   'name': PlutoCell(value: h.name),
                   'type': PlutoCell(value: h.type),
@@ -505,14 +455,13 @@ void _deleteConfirmation(PlutoRow row, dynamic rendererContext) async{
       });
     } catch (e) {
       print('Error fetching data: $e');
-<<<<<<< HEAD
-      // Optionally show error to user
-    }
-  }
-=======
+
       
     }
   }
+
+      
+   
 
 
 // Delete
@@ -593,7 +542,7 @@ void _showDeleteDialog(PlutoRow row) {
     },
   );
 }
->>>>>>> 3483a4cbb538fd8e5f1f37ffe968b3f1bcfd7a7e
+
 
 // Add this method to call the API service for deleting a holiday
 Future<void> deleteHoliday(String id) async {

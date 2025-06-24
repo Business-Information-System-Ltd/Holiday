@@ -96,16 +96,7 @@ Future<List<Holiday>> getHolidayInRange(String start, String end) async {
       throw Exception('Failed to update holiday');
     }
   }
-<<<<<<< HEAD
-    
-  // Future<void> deleteHoliday(int id) async {
-  //   final response = await http.delete(Uri.parse('$holidayEndPoint/$id'));
-  //   if (response.statusCode != 200 && response.statusCode != 204) {
-  //     throw Exception('Failed to delete holiday');
-  //   }
-  // }
-  Future<bool> deleteHolidayById(String name) async {
-=======
+
   Future<void> deleteHoliday(String id) async {
     final response = await http.delete(Uri.parse('$holidayEndPoint/$id'));
     if (response.statusCode != 200 && response.statusCode != 204) {
@@ -114,7 +105,7 @@ Future<List<Holiday>> getHolidayInRange(String start, String end) async {
     }
   }
   Future<bool> deleteHolidayByName(String name) async {
->>>>>>> 3483a4cbb538fd8e5f1f37ffe968b3f1bcfd7a7e
+
   try {
     final queryUrl = Uri.parse('http://localhost:3000/holidays?name=$name');
     final response = await http.get(queryUrl);

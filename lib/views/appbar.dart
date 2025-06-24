@@ -14,7 +14,9 @@ class MainScaffold extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 218, 240, 247),
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 104, 217, 236),
-        title: Center(child: Text(title, style: const TextStyle(fontSize: 24))),
+        title: SizedBox(
+          width: 50,
+          child: Center(child: Text(title, style: const TextStyle(fontSize: 24)))),
        // actions: const [Icon(Icons.person_outline)],
       ),
       drawer: Drawer(
