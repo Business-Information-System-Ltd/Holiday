@@ -1,0 +1,97 @@
+{
+  "holidays": [
+    {
+      "id": "3aed",
+      "date": "2025-06-21 00:00:00.000",
+      "name": "national holiday",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "UK",
+      "region": "england",
+      "created_at": "",
+      "updated_at": ""
+    },
+    {
+      "id": "59ca",
+      "date": "2026-01-01 00:00:00.000",
+      "name": "Happy New Year",
+      "type": "Public",
+      "recurring": true,
+      "country_code": "MM",
+      "region": "Yangon",
+      "created_at": "",
+      "updated_at": ""
+    },
+    {
+      "id": "0596",
+      "date": "2025-06-02",
+      "name": "AA",
+      "type": "Religious",
+      "recurring": true,
+      "country_code": "MM",
+      "region": "Bagan"
+    },
+    {
+      "id": "77bc",
+      "date": "2025-06-09",
+      "name": "BB",
+      "type": "Religious",
+      "recurring": true,
+      "country_code": "MM",
+      "region": "Inlay"
+    },
+    {
+      "id": "f007",
+      "date": "2025-06-01",
+      "name": "CC",
+      "type": "Observance",
+      "recurring": false,
+      "country_code": "UK",
+      "region": "KK"
+    },
+    {
+      "id": "d0f8",
+      "date": "2025-05-07",
+      "name": "KK",
+      "type": "Religious",
+      "recurring": false,
+      "country_code": "UK",
+      "region": "LL"
+    },
+    {
+      "id": "1254",
+      "date": "2025-07-11",
+      "name": "My Birthday",
+      "type": "Observance",
+      "recurring": true,
+      "country_code": "MM",
+      "region": "Yangon"
+    },
+    {
+      "id": "73f1",
+      "date": "2025-06-17",
+      "name": "DD",
+      "type": "Bank",
+      "recurring": false,
+      "country_code": "JP",
+      "region": "AA"
+    }
+  ],
+  "countries": [
+    {
+      "id": "1",
+      "Country_code": "MM",
+      "Country_name": "Myanmar"
+    },
+    {
+      "id": "2",
+      "Country_code": "JP",
+      "Country_name": "Japan"
+    },
+    {
+      "id": "3",
+      "Country_code": "UK",
+      "Country_name": "United Kingdom"
+    }
+  ]
+}
