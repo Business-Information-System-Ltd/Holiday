@@ -1,64 +1,204 @@
 {
   "holidays": [
     {
-      "id": "3aed",
-      "date": "2025-06-21 00:00:00.000",
-      "name": "national holiday",
+      "id": "421f",
+      "date": "2025-01-04",
+      "name": "Independence Day",
       "type": "Public",
       "recurring": false,
-      "country_code": "UK",
-      "region": "england",
-      "created_at": "",
-      "updated_at": ""
+      "country_code": "MM",
+      "region": "ALL"
     },
     {
-      "id": "59ca",
-      "date": "2026-01-01 00:00:00.000",
-      "name": "Happy New Year",
+      "id": "1fe7",
+      "date": "2025-02-12",
+      "name": "Union Day",
       "type": "Public",
-      "recurring": true,
+      "recurring": false,
       "country_code": "MM",
-      "region": "Yangon",
+      "region": "ALL"
+    },
+    {
+      "id": "5025",
+      "date": "2025-03-02",
+      "name": "Peasants' Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "78f8",
+      "date": "2025-03-13",
+      "name": "Tabaung Full Moon Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "da61",
+      "date": "2025-03-27",
+      "name": "Resistance Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "83c5",
+      "date": "2025-04-13",
+      "name": "The Day Before Water Festival(Eve)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "71a6",
+      "date": "2025-04-14",
+      "name": "First Day of Water Festival(Akya)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "1391",
+      "date": "2025-04-15",
+      "name": "Second Day of Water Festival(Akyat)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "a0a8",
+      "date": "2025-04-16",
+      "name": "Final Day of Water Festival(Thingyan Atat Day)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "31da",
+      "date": "2025-04-17",
+      "name": "Myanmar New Year's Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "1a8e",
+      "date": "2025-05-01",
+      "name": "International Workers' Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "3302",
+      "date": "2025-05-11",
+      "name": " Banyan Tree Water Ceremony",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "bca8",
+      "date": "2025-05-11",
+      "name": "Full Moon Day of Kasong",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "3fc3",
+      "date": "2025-06-07",
+      "name": "Eid al-Adha",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "8ac0",
+      "date": "2025-07-19 00:00:00.000",
+      "name": "Martyrs' Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL",
       "created_at": "",
       "updated_at": ""
     },
     {
-      "id": "0596",
-      "date": "2025-06-02",
-      "name": "AA",
-      "type": "Religious",
-      "recurring": true,
-      "country_code": "MM",
-      "region": "Bagan"
-    },
-    {
-      "id": "77bc",
-      "date": "2025-06-09 00:00:00.000",
-      "name": "BB",
-      "type": "Religious",
-      "recurring": true,
-      "country_code": "MM",
-      "region": "Sagaing",
-      "created_at": "",
-      "updated_at": ""
-    },
-    {
-      "id": "f007",
-      "date": "2025-06-01",
-      "name": "CC",
-      "type": "Observance",
-      "recurring": false,
-      "country_code": "UK",
-      "region": "KK"
-    },
-    {
-      "id": "50ea",
-      "date": "2025-02-09",
-      "name": "MON National Day",
-      "type": "Religious",
+      "id": "e128",
+      "date": "2025-10-05",
+      "name": "Full Moon Day of Thadingyut Holiday(End of Buddhist Lent)",
+      "type": "Public",
       "recurring": false,
       "country_code": "MM",
-      "region": "MON State"
+      "region": "ALL"
+    },
+    {
+      "id": "83c8",
+      "date": "2025-10-06",
+      "name": "Full Moon Day of Thadingyut Holiday (End of Buddhist Lent)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "5ce0",
+      "date": "2025-10-07",
+      "name": "Full Moon Day of Thadingyut Holiday(End of Buddhist Lent)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "d6a5",
+      "date": "2025-11-04",
+      "name": "Full Moon Day of Tazaungmone",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "4710",
+      "date": "2025-11-14",
+      "name": "National Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "f5f1",
+      "date": "2025-12-19",
+      "name": "Kayin New Year Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "499a",
+      "date": "2025-12-25",
+      "name": "Christmas Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
     }
   ],
   "countries": [

@@ -90,7 +90,9 @@ class _AddHolidayPageState extends State<AddHolidayPage>
                 Row(
                   children: [
                     Expanded(child: _buildDateField()),
+                    
                     SizedBox(width: 20),
+
                     Expanded(
                       child: _buildSelectType("Select Type", selectedType, (
                         val,
