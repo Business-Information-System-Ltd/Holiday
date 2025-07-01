@@ -5,7 +5,7 @@ import 'package:holiday/views/data.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HolidayCalendar extends StatefulWidget {
-  const HolidayCalendar({super.key});
+  const HolidayCalendar({super.key, required userData});
 
   @override
   State<HolidayCalendar> createState() => HolidayCalendarState();
@@ -129,6 +129,7 @@ class HolidayCalendarState extends State<HolidayCalendar> {
                       focusedDay: focusDay,
                       firstDay: DateTime.utc(2020, 1, 1),
                       lastDay: DateTime.utc(2030, 12, 31),
+                      
                       calendarFormat: CalendarFormat.month,
                       availableCalendarFormats: const {
                         CalendarFormat.month: 'Month',
@@ -136,13 +137,14 @@ class HolidayCalendarState extends State<HolidayCalendar> {
                       selectedDayPredicate: (day) =>
                           isSameDay(selectedDay, day),
 
-                      onDaySelected: (selected, focused) {
+                      onDaySelected: (selected, focused) async {
                         setState(() {
                           selectedDay = selected;
                           focusDay = focused;
                         });
 
                         final holiday = getHolidayByDate(selected);
+                         await Future.delayed(const Duration(milliseconds: 150));
                         showDialog(
                           context: context,
                           builder: (_) => AlertDialog(
@@ -158,18 +160,44 @@ class HolidayCalendarState extends State<HolidayCalendar> {
                         );
                       },
 
-                      holidayPredicate: (day) {
+                     holidayPredicate: (day) {
                         return filteredHolidays.any(
                           (h) => isSameDay(DateTime.parse(h.date), day),
                         );
                       },
-
-                      calendarStyle: const CalendarStyle(
-                        holidayDecoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.green,
-                        ),
-                        holidayTextStyle: TextStyle(color: Colors.white),
+                      calendarBuilders: CalendarBuilders(
+                      defaultBuilder: (context, day, focusedDay) {
+                        
+                        if (day.weekday == DateTime.saturday || day.weekday == DateTime.sunday) {
+                          return Container(
+                            margin: const EdgeInsets.all(6.0),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 243, 80, 137),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              '${day.day}',
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        }
+                        return null; 
+                      },
+                      holidayBuilder: (context, day, focusedDay) {
+                        return Container(
+                          margin: const EdgeInsets.all(6.0),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 243, 80, 137),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Text(
+                            '${day.day}',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
+                        );
+                      },
                       ),
                     ),
                   ),

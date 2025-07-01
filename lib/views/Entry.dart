@@ -39,12 +39,18 @@ class _AddHolidayPageState extends State<AddHolidayPage>
 
   void _fetchData() async {
     try {
-      List<Country> country = await ApiService().fetchCountry();
+      List<Country> countryList = await ApiService().fetchCountry();
 
       setState(() {
-        countries = country;
+        countries = countryList;
       });
-    } catch (e) {}
+
+      print(
+        "Fetched Countries: ${countries.map((e) => e.countryName).toList()}",
+      ); // ✅ Print AFTER setState
+    } catch (e) {
+      print("Country fetch error: $e");
+    }
   }
 
   @override
@@ -324,14 +330,16 @@ class _AddHolidayPageState extends State<AddHolidayPage>
   }
 
   Future<void> _submitHoliday() async {
-    final String apiUrl = "http://localhost:3000/holidays";
+    final String apiUrl = "http://127.0.0.1:8000/api/holidays/";
+
     final Map<String, dynamic> holidayJson = {
       'date': _dateController.text,
       'name': _nameController.text,
       'type': selectedType ?? '',
       'recurring': repeat,
-      'country_code': selectedCountry?.countryCode ?? '',
+      'country': selectedCountry?.id ?? '',
       'region': _regionController.text,
+      'created_by': 1,
     };
 
     try {

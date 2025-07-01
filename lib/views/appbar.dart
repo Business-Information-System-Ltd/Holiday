@@ -33,7 +33,7 @@ class MainScaffold extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HolidayCalendar()),
+                  MaterialPageRoute(builder: (context) => HolidayCalendar(userData: null,)),
                 );
               },
             ),
@@ -53,7 +53,7 @@ class MainScaffold extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Tablelist()),
+                  MaterialPageRoute(builder: (context) => Tablelist(userData: null,)),
                 );
               },
             ),

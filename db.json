@@ -1,80 +1,211 @@
 {
   "holidays": [
     {
-      "id": "3aed",
-      "date": "2025-06-21 00:00:00.000",
-      "name": "national holiday",
+      "id": "be3c",
+      "date": "2025-01-01",
+      "name": "New Year Holiday",
       "type": "Public",
       "recurring": false,
-      "country_code": "UK",
-      "region": "england",
-      "created_at": "",
-      "updated_at": ""
+      "country_code": "MM",
+      "region": "ALL"
     },
     {
-      "id": "59ca",
-      "date": "2026-01-01 00:00:00.000",
-      "name": "Happy New Year",
+      "id": "24aa",
+      "date": "2025-01-04",
+      "name": "Independence Day",
       "type": "Public",
-      "recurring": true,
-      "country_code": "MM",
-      "region": "Yangon",
-      "created_at": "",
-      "updated_at": ""
-    },
-    {
-      "id": "0596",
-      "date": "2025-06-02",
-      "name": "AA",
-      "type": "Religious",
-      "recurring": true,
-      "country_code": "MM",
-      "region": "Bagan"
-    },
-    {
-      "id": "77bc",
-      "date": "2025-06-09",
-      "name": "BB",
-      "type": "Religious",
-      "recurring": true,
-      "country_code": "MM",
-      "region": "Inlay"
-    },
-    {
-      "id": "f007",
-      "date": "2025-06-01",
-      "name": "CC",
-      "type": "Observance",
       "recurring": false,
-      "country_code": "UK",
-      "region": "KK"
-    },
-    {
-      "id": "d0f8",
-      "date": "2025-05-07",
-      "name": "KK",
-      "type": "Religious",
-      "recurring": false,
-      "country_code": "UK",
-      "region": "LL"
-    },
-    {
-      "id": "1254",
-      "date": "2025-07-11",
-      "name": "My Birthday",
-      "type": "Observance",
-      "recurring": true,
       "country_code": "MM",
-      "region": "Yangon"
+      "region": "ALL"
     },
     {
-      "id": "73f1",
-      "date": "2025-06-17",
-      "name": "DD",
-      "type": "Bank",
+      "id": "90b0",
+      "date": "2025-02-12",
+      "name": "Union Day",
+      "type": "Public",
       "recurring": false,
-      "country_code": "JP",
-      "region": "AA"
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "b873",
+      "date": "2025-03-02",
+      "name": "Peasants' Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "8682",
+      "date": "2025-03-13",
+      "name": "Full Moon Day of Tabaung",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "e389",
+      "date": "2025-03-27",
+      "name": "Armed Forces' Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "1559",
+      "date": "2025-04-13",
+      "name": "Mahar Thingyan (Water Festival)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "1c14",
+      "date": "2025-04-14",
+      "name": "Mahar Thingyan (Water Festival)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "a365",
+      "date": "2025-04-15",
+      "name": "Mahar Thingyan (Water Festival)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "85c5",
+      "date": "2025-04-16",
+      "name": "Mahar Thingyan (Water Festival)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "938a",
+      "date": "2025-04-17",
+      "name": "Myanmar New Year",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "90ce",
+      "date": "2025-05-01",
+      "name": "International Worker's Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "6996",
+      "date": "2025-05-11",
+      "name": "Full Moon Day of Kasong",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "ac92",
+      "date": "2025-06-07",
+      "name": "Eid al-Adha",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "09e5",
+      "date": "2025-07-09",
+      "name": "Full Moon Day of Waso (Beginning of Buddhist Lent)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "e2e6",
+      "date": "2025-07-19",
+      "name": "Martyrs' Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "5422",
+      "date": "2025-10-05",
+      "name": "Full Moon Day of Thadingyut Holiday (End of Buddhist Lent)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "dd4c",
+      "date": "2025-10-06",
+      "name": "Full Moon Day of Thadingyut Holiday (End of Buddhist Lent)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "7d6c",
+      "date": "2025-10-07",
+      "name": "Full Moon Day of Thadingyut Holiday (End of Buddhist Lent)",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "3e5d",
+      "date": "2025-11-04",
+      "name": "\tFull Moon Day of Tazaungmone",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "39e5",
+      "date": "2025-11-14",
+      "name": "National Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "7b3d",
+      "date": "2025-12-19",
+      "name": "Kayin New Year Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
+    },
+    {
+      "id": "f2b5",
+      "date": "2025-12-25",
+      "name": "Christmas Day",
+      "type": "Public",
+      "recurring": false,
+      "country_code": "MM",
+      "region": "ALL"
     }
   ],
   "countries": [
