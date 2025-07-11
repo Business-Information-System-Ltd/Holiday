@@ -8,8 +8,13 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class AddHolidayPage extends StatefulWidget {
+  final DateTime selectedDate;
+  final Holiday? selectedHoliday;
+  AddHolidayPage({required this.selectedDate,this.selectedHoliday});
+
   @override
   _AddHolidayPageState createState() => _AddHolidayPageState();
+  
 }
 
 class _AddHolidayPageState extends State<AddHolidayPage>
@@ -21,8 +26,8 @@ class _AddHolidayPageState extends State<AddHolidayPage>
   List<Country> countries = [];
   bool repeat = false;
   final _formkey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
+  late TextEditingController _nameController = TextEditingController();
+  late TextEditingController _dateController = TextEditingController();
   final TextEditingController _regionController = TextEditingController();
   late AnimationController controller;
   bool isMenuBar = false;
@@ -35,6 +40,18 @@ class _AddHolidayPageState extends State<AddHolidayPage>
   void initState() {
     super.initState();
     _fetchData();
+     _dateController = TextEditingController(
+      text: widget.selectedDate.toString().split(' ')[0],
+    );
+    _nameController = TextEditingController(
+      text: widget.selectedHoliday?.name ?? '',
+    );
+    _regionController.text = widget.selectedHoliday?.region ?? '';
+
+  selectedType = widget.selectedHoliday?.type;
+
+  repeat = widget.selectedHoliday?.recurring ?? false;
+    
   }
 
   void _fetchData() async {
@@ -47,7 +64,7 @@ class _AddHolidayPageState extends State<AddHolidayPage>
 
       print(
         "Fetched Countries: ${countries.map((e) => e.countryName).toList()}",
-      ); // ✅ Print AFTER setState
+      );
     } catch (e) {
       print("Country fetch error: $e");
     }
@@ -62,12 +79,11 @@ class _AddHolidayPageState extends State<AddHolidayPage>
         child: Form(
           key: _formkey,
           child: Container(
-            width: MediaQuery.of(context).size.width / 1.9,
-            height: MediaQuery.of(context).size.height / 1.3,
-
+            width: MediaQuery.of(context).size.width / 2,
+            height: MediaQuery.of(context).size.height / 1.2,
             padding: EdgeInsets.all(20),
             margin: EdgeInsets.all(16),
-            decoration: BoxDecoration(
+            decoration: BoxDecoration( 
               color: Color.fromARGB(255, 150, 219, 240),
               borderRadius: BorderRadius.circular(10),
             ),
@@ -157,13 +173,13 @@ class _AddHolidayPageState extends State<AddHolidayPage>
                 ),
 
                 SizedBox(width: 20, height: 20),
-
-                // Buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                       child: Text("Cancel"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromARGB(255, 218, 237, 247),
@@ -187,6 +203,7 @@ class _AddHolidayPageState extends State<AddHolidayPage>
                         backgroundColor: Color.fromARGB(255, 218, 237, 247),
                       ),
                     ),
+                    
                   ],
                 ),
               ],
@@ -239,12 +256,12 @@ class _AddHolidayPageState extends State<AddHolidayPage>
             _dateController.text = formattedDate;
           });
         }
-        (value) {
-          if (value == null || value.isEmpty) {
-            return 'Please select a date';
-          }
-          return null;
-        };
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please select a date';
+        }
+        return null;
       },
     );
   }

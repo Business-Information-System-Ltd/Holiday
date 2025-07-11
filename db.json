@@ -14,13 +14,13 @@
       "date": "2025-01-04",
       "name": "Independence Day",
       "type": "Public",
-<<<<<<< HEAD
+
       "recurring": true,
       "country_code": "MM",
       "region": "Yangon",
       "created_at": "",
-      "updated_at": ""
-=======
+      "updated_at": "",
+
       "recurring": false,
       "country_code": "MM",
       "region": "ALL"
@@ -213,7 +213,7 @@
       "recurring": false,
       "country_code": "MM",
       "region": "ALL"
->>>>>>> 0403e689928073fe0da381fbd9d1e68f6eadc09b
+
     }
   ],
   "countries": [

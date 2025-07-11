@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:holiday/views/Entry.dart';
 import 'package:holiday/views/apiservices.dart';
 import 'package:holiday/views/appbar.dart';
 import 'package:holiday/views/data.dart';
 import 'package:intl/intl.dart';
+import 'package:multi_select_flutter/dialog/multi_select_dialog_field.dart';
+import 'package:multi_select_flutter/util/multi_select_item.dart';
+import 'package:multi_select_flutter/util/multi_select_list_type.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class Tablelist extends StatefulWidget {
@@ -14,6 +18,18 @@ class Tablelist extends StatefulWidget {
 
 class TablelistState extends State<Tablelist> {
   TextEditingController _searchController = TextEditingController();
+  
+  List<int> _selectedYears = [];
+  List<String> _selectedTypes = [];
+  TextEditingController _yearController = TextEditingController();
+  TextEditingController _typeController = TextEditingController();
+  bool noHolidayFound = false;
+  DateTime focusDay = DateTime(DateTime.now().year);
+  List<int> selectedYears = [];
+  List<String> selectedTypes = [];
+  List<String> allTypes = ["All", "Public", "Bank", "Religious", "Observance"];
+
+  String selectedType = '';
   late List<PlutoColumn> columns;
   List<PlutoRow> rows = [];
   List<PlutoRow> filteredRows = [];
@@ -23,14 +39,42 @@ class TablelistState extends State<Tablelist> {
   bool isLoading = true;
   late BuildContext _context;
   PlutoGridStateManager? stateManager;
+  Key yearFieldKey = UniqueKey();
+  Key typeFieldKey = UniqueKey();
+
   @override
   void initState() {
     super.initState();
     initColumn();
     _loadHolidays();
+    _refreshData();
+    allTypes = [
+      "Public",
+      "Bank",
+      "Religious",
+      "Observance",
+      ...holidays.map((e) => e.type).toSet(),
+    ];
     _loadInitialData();
   }
-
+Future<void> _refreshData() async {
+  setState(() {
+    selectedType= '';
+    selectedYears.clear();
+    selectedTypes.clear();
+    _searchController.clear();
+    noHolidayFound = false;
+    focusDay =DateTime.now();
+   _yearController.clear();
+  _typeController.clear();
+  _loadHolidays();
+  filteredRows =List.from(rows);
+    stateManager?.removeAllRows();
+    stateManager?.appendRows(filteredRows);
+ 
+  });
+  
+}
   Future<void> _loadInitialData() async {
     try {
       countries = await ApiService().fetchCountry();
@@ -40,8 +84,7 @@ class TablelistState extends State<Tablelist> {
     } finally {
       setState(() => isLoading = false);
     }
-  }
-
+  } 
   void initColumn() {
     columns = [
       PlutoColumn(
@@ -55,7 +98,7 @@ class TablelistState extends State<Tablelist> {
         title: 'Date',
         field: 'date',
         type: PlutoColumnType.date(),
-        width: 150,
+        width: 200,
       ),
       PlutoColumn(
         title: 'Name',
@@ -69,24 +112,27 @@ class TablelistState extends State<Tablelist> {
         title: 'Country',
         field: 'country',
         type: PlutoColumnType.text(),
-        width: 200,
+        width: 250,
       ),
       PlutoColumn(
         title: 'Region',
         field: 'region',
         type: PlutoColumnType.text(),
         width: 150,
+        hide: true,
       ),
       PlutoColumn(
         title: 'Repeat',
         field: 'repeat',
         type: PlutoColumnType.text(),
         width: 150,
+        hide: true,
       ),
       PlutoColumn(
         title: 'Actions',
         field: 'actions',
         type: PlutoColumnType.text(),
+        width: 200,
         enableColumnDrag: false,
         enableSorting: false,
         enableContextMenu: false,
@@ -139,8 +185,6 @@ class TablelistState extends State<Tablelist> {
         )
         .id;
     if (selectedCountryCode == -1) selectedCountryCode = null;
-    //int? selectedCountryCode = int.tryParse(row.cells['country']!.value.toString());
-    //String selectedCountryCode = row.cells['country']!.value.toString();
     DateTime? selectedDate =
         DateTime.tryParse(row.cells['date']!.value) ?? DateTime.now();
     bool isRecurring = row.cells['repeat']!.value.toLowerCase() == 'true';
@@ -156,8 +200,8 @@ class TablelistState extends State<Tablelist> {
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Container(
-              width: MediaQuery.of(context).size.width / 3,
-              height: MediaQuery.of(context).size.height / 2,
+              width: MediaQuery.of(context).size.width / 2.9,
+              height: MediaQuery.of(context).size.height / 1.5,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
 
@@ -448,7 +492,9 @@ class TablelistState extends State<Tablelist> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 54, 130, 244),
+              ),
               onPressed: () async {
                 Navigator.pop(context);
 
@@ -465,7 +511,7 @@ class TablelistState extends State<Tablelist> {
                   );
                   stateManager?.removeRows([row]);
 
-                  Navigator.pop(_context); // close progress indicator
+                  Navigator.pop(_context);
 
                   ScaffoldMessenger.of(_context).showSnackBar(
                     SnackBar(
@@ -476,7 +522,7 @@ class TablelistState extends State<Tablelist> {
                     ),
                   );
                 } catch (e) {
-                  Navigator.pop(_context); // close progress indicator
+                  Navigator.pop(_context); 
                   ScaffoldMessenger.of(_context).showSnackBar(
                     SnackBar(
                       content: Text('Failed to delete: $e'),
@@ -498,7 +544,7 @@ class TablelistState extends State<Tablelist> {
 
   Future<void> _loadHolidays() async {
     try {
-      final holidayList = await ApiService().fetchHolidays();
+      final holidayList = await ApiService().fetchHolidays(focusDay.year);
       setState(() {
         holidays = holidayList;
         rows = holidayList.map((holiday) {
@@ -522,13 +568,49 @@ class TablelistState extends State<Tablelist> {
             },
           );
         }).toList();
-        print("Holidays fetched: ${holidayList.length}");
+        // print("Holidays fetched: ${holidayList.length}");
         filteredRows = List.from(rows);
       });
     } catch (e) {
       print("Error loading holidays: $e");
     }
   }
+
+
+      void _filterRowsByMultiTypeInYear(List<int> targetYears) {
+  if (targetYears.isEmpty) {
+    stateManager?.removeAllRows();
+    stateManager?.appendRows(rows); // Restore all rows
+    noHolidayFound = false;
+    return;
+  }
+
+  List<PlutoRow> filtered = rows.where((row) {
+    final type = row.cells['type']?.value?.toString().toLowerCase().trim() ?? '';
+    final dateStr = row.cells['date']?.value?.toString();
+
+    if (dateStr == null) return false;
+
+    DateTime date;
+    try {
+      date = DateTime.parse(dateStr);
+    } catch (_) {
+      return false;
+    }
+
+    final matchYear = targetYears.contains(date.year);
+    final matchType = selectedTypes.isEmpty ||
+        selectedTypes.map((e) => e.toLowerCase().trim()).contains(type);
+
+    return matchYear && matchType;
+  }).toList();
+
+  stateManager?.removeAllRows();
+  stateManager?.appendRows(filtered);
+  noHolidayFound = filtered.isEmpty;
+  setState(() {});
+}
+
 
   void _searchData(String query) {
     if (stateManager == null) return;
@@ -539,22 +621,23 @@ class TablelistState extends State<Tablelist> {
       final lowerQuery = query.toLowerCase();
       return row.cells['name']!.value.toString().toLowerCase().contains(
             lowerQuery,
-          ) ||
-          row.cells['type']!.value.toString().toLowerCase().contains(
-            lowerQuery,
-          ) ||
-          row.cells['country']!.value.toString().toLowerCase().contains(
-            lowerQuery,
-          ) ||
-          row.cells['region']!.value.toString().toLowerCase().contains(
-            lowerQuery,
-          ) ||
-          row.cells['date']!.value.toString().toLowerCase().contains(
-            lowerQuery,
-          ) ||
-          row.cells['repeat']!.value.toString().toLowerCase().contains(
-            lowerQuery,
-          );
+      );
+          // ) ||
+          // row.cells['type']!.value.toString().toLowerCase().contains(
+          //   lowerQuery,
+          // ) ||
+          // row.cells['country']!.value.toString().toLowerCase().contains(
+          //   lowerQuery,
+          // ) ||
+          // row.cells['region']!.value.toString().toLowerCase().contains(
+          //   lowerQuery,
+          // ) ||
+          // row.cells['date']!.value.toString().toLowerCase().contains(
+          //   lowerQuery,
+          // ) ||
+          // row.cells['repeat']!.value.toString().toLowerCase().contains(
+          //   lowerQuery,
+          // );
     });
   }
 
@@ -570,64 +653,149 @@ class TablelistState extends State<Tablelist> {
       body: Container(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.4,
-                height: 50,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: const Color.fromARGB(255, 14, 12, 12),
+          children: [            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child:MultiSelectDialogField<int>(
+                    initialValue: _selectedYears,
+                    items: List.generate(3, (index) {
+                      int year = DateTime.now().year - 1 + index;
+                      return MultiSelectItem<int>(year,'$year');
+                      
+                    }),
+                    title: Text("Select Years"),
+                    dialogHeight: 250,dialogWidth: 100,
+                    buttonText: Text("Select Years"),
+                    // initialValue: selectedYears,
+                    listType: MultiSelectListType.LIST,
+                    onConfirm: (values){
+                      setState(() {
+                        selectedYears=values;
+                      });
+                    if (selectedYears.isNotEmpty) {
+                       _filterRowsByMultiTypeInYear(selectedYears);
+                      
+                    }
+                     }
                   ),
-                  borderRadius: BorderRadius.circular(8.0),
                 ),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.search, color: Colors.black),
-                      onPressed: () {
-                        _searchData(_searchController.text);
-                      },
-                    ),
-                    Expanded(
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: _searchData,
-                        decoration: const InputDecoration(
-                          hintText: "Search",
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(8.0),
-                          isCollapsed: true,
-                        ),
-                        style: const TextStyle(color: Colors.black),
-                        onSubmitted: (value) {
-                          _searchData(value);
-                        },
-                      ),
-                    ),
-                    if (_searchController.text.isNotEmpty)
-                      IconButton(
-                        icon: const Icon(
-                          Icons.clear,
-                          color: Colors.black54,
-                          size: 20,
-                        ),
-                        onPressed: () {
-                          _searchController.clear();
-                          _searchData('');
-                        },
-                      ),
-                  ],
+
+                SizedBox(width: 40),
+                MultiSelectDialogField<String>(
+                  initialValue: _selectedTypes,
+                  items: allTypes
+                      .map((type) => MultiSelectItem<String>(type, type))
+                      .toList(),
+                  title: const Text("Select Types"),
+                  dialogWidth: 100,dialogHeight: 250,
+                  buttonText: const Text("Select Types"),
+                  // initialValue: selectedTypes,
+                  listType: MultiSelectListType.LIST,
+                  onConfirm: (values) {
+                    setState(() {
+                      selectedTypes = values;
+                    });
+                    if (selectedYears.isNotEmpty) {
+                      _filterRowsByMultiTypeInYear(selectedYears);
+                    }
+                  },
+                  
                 ),
+                if (selectedYears.isNotEmpty || selectedTypes.isNotEmpty)
+                IconButton(
+                  onPressed: _refreshData,
+                  icon: const Icon(Icons.close),
+                  tooltip: "Clear filter",
+                ),
+                IconButton(
+                onPressed: _refreshData,
+                icon: const Icon(Icons.refresh),
+                tooltip: "Reset all & reload data",
               ),
+
+              SizedBox(width: 30,),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 14, 12, 12),
+                      ),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.search, color: Colors.black),
+                          onPressed: () {
+                            _searchData(_searchController.text);
+                          },
+                        ),
+                        Expanded(
+                        
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: _searchData,
+                            decoration: const InputDecoration(
+                              hintText: "Search",
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.all(8.0),
+                              isCollapsed: true,
+                            ),
+                            style: const TextStyle(color: Colors.black),
+                            onSubmitted: (value) {
+                              _searchData(value);
+                            },
+                          ),
+                        ),
+                        if (_searchController.text.isNotEmpty)
+                          IconButton(
+                            icon: const Icon(
+                              Icons.clear,
+                              color: Colors.black54,
+                              size: 20,
+                            ),
+                            onPressed: () {
+                              _searchController.clear();
+                              _searchData('');
+                            },
+                          ),
+                      ],
+                      
+                    ),
+                    
+                  ),
+                ),
+                SizedBox(width: 30),
+                 ElevatedButton(
+                  onPressed: () {
+                    // Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            AddHolidayPage(selectedDate: DateTime.now()),
+                      ),
+                    );
+                  },
+                  child: Text("Add Holiday"),
+                ),
+
+                
+              ],
             ),
             SizedBox(height: 20),
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
+                  width: MediaQuery.of(context).size.width * 1,
                   child: PlutoGrid(
                     columns: columns,
                     rows: filteredRows,
@@ -640,6 +808,14 @@ class TablelistState extends State<Tablelist> {
                     configuration: const PlutoGridConfiguration(),
                   ),
                 ),
+              ),
+            ),
+            if(noHolidayFound)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                "No holiday found.",
+                style: TextStyle(fontSize: 16, color: Colors.red),
               ),
             ),
           ],

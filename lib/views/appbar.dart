@@ -17,47 +17,56 @@ class MainScaffold extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 104, 217, 236),
         title: Center(child: Text(title, style: const TextStyle(fontSize: 24))),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: const EdgeInsets.all(8.0),
+      drawer: Container(
+        width: MediaQuery.of(context).size.width*0.2,
+        child: Drawer(
+          child: ListView(
 
-          children: [
-            const DrawerHeader(
-                decoration: BoxDecoration(
-    color: Color.fromARGB(255, 104, 217, 236),),
-              child: Text('Menu', style: TextStyle(fontSize: 24)),
-            ),
-             ListTile(
-              leading: Icon(Icons.table_chart),
-              title: Text('Calendar'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HolidayCalendar(userData: null,)),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.add),
-              title: Text('Add Holiday'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AddHolidayPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.table_chart),
-              title: Text('Holiday Table'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Tablelist(userData: null,)),
-                );
-              },
-            ),
-          ],
+            padding: const EdgeInsets.all(8.0),        
+            children: [
+              SizedBox( height: 150,
+                child: const DrawerHeader( 
+                                
+                    decoration: BoxDecoration(
+                             color: Color.fromARGB(255, 104, 217, 236),
+                             ),
+                             
+                  child: Center(
+                    child: Text('Menu', style: TextStyle(fontSize: 24))),                 
+                ),
+              ),
+               ListTile(
+                leading: Icon(Icons.table_chart),
+                title: Text('Calendar'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HolidayCalendar(userData: null,)),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.add),
+                title: Text('Add Holiday'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddHolidayPage(selectedDate: DateTime.now(),)),
+                  );
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.table_chart),
+                title: Text('Holiday Table'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Tablelist(userData: null,)),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
       body: body,
