@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:holiday/views/apiservices.dart';
 import 'package:holiday/views/appbar.dart';
 import 'package:holiday/views/data.dart';
+import 'package:intl/intl.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
 class Tablelist extends StatefulWidget {
-  const Tablelist({Key? key}) : super(key: key);
+  const Tablelist({Key? key, required userData}) : super(key: key);
 
   @override
   State<Tablelist> createState() => TablelistState();
@@ -63,11 +64,7 @@ class TablelistState extends State<Tablelist> {
         width: 500,
       ),
 
-      PlutoColumn(
-        title: 'Type', 
-        field: 'type',
-        type: PlutoColumnType.text(),
-      ),
+      PlutoColumn(title: 'Type', field: 'type', type: PlutoColumnType.text()),
       PlutoColumn(
         title: 'Country',
         field: 'country',
@@ -113,7 +110,7 @@ class TablelistState extends State<Tablelist> {
                   final row = rendererContext.row;
                   _showDeleteDialog(row);
                   print("Delete ${row.cells['name']?.value}");
-                  rendererContext.stateManager.removeRows([row]);
+                  //rendererContext.stateManager.removeRows([row]);
                 },
               ),
             ],
@@ -128,13 +125,22 @@ class TablelistState extends State<Tablelist> {
     final TextEditingController nameController = TextEditingController(
       text: row.cells['name']!.value,
     );
-    final typeOptions = ['Public', 'National', 'Religious', 'Optional'];
+    final typeOptions = ['Public', 'Bank', 'Religious', 'Observance'];
     String selectedType = row.cells['type']!.value;
 
     final TextEditingController regionController = TextEditingController(
       text: row.cells['region']!.value,
     );
-    String selectedCountryCode = row.cells['country']!.value;
+    String countryName = row.cells['country']!.value.toString();
+    int? selectedCountryCode = countries
+        .firstWhere(
+          (c) => c.countryName == countryName,
+          orElse: () => Country(id: -1, countryCode: '', countryName: ''),
+        )
+        .id;
+    if (selectedCountryCode == -1) selectedCountryCode = null;
+    //int? selectedCountryCode = int.tryParse(row.cells['country']!.value.toString());
+    //String selectedCountryCode = row.cells['country']!.value.toString();
     DateTime? selectedDate =
         DateTime.tryParse(row.cells['date']!.value) ?? DateTime.now();
     bool isRecurring = row.cells['repeat']!.value.toLowerCase() == 'true';
@@ -260,16 +266,22 @@ class TablelistState extends State<Tablelist> {
                   Row(
                     children: [
                       Expanded(
-                        child: DropdownButtonFormField<String>(
+                        child: DropdownButtonFormField<int>(
                           value: selectedCountryCode,
-                          items: countries.map((country) {
-                            return DropdownMenuItem(
-                              value: country.countryCode,
-                              child: Text(country.countryName),
-                            );
-                          }).toList(),
+                          items: countries
+                              .map(
+                                (country) => DropdownMenuItem<int>(
+                                  value: country.id,
+                                  child: Text(country.countryName),
+                                ),
+                              )
+                              .toList(),
                           onChanged: (value) {
-                            if (value != null) selectedCountryCode = value;
+                            if (value != null) {
+                              setState(() {
+                                selectedCountryCode = value;
+                              });
+                            }
                           },
                           decoration: InputDecoration(
                             labelText: 'Select Country',
@@ -285,6 +297,7 @@ class TablelistState extends State<Tablelist> {
                           ),
                         ),
                       ),
+
                       const SizedBox(width: 20),
                       Expanded(
                         child: TextField(
@@ -351,28 +364,35 @@ class TablelistState extends State<Tablelist> {
                             name: nameController.text,
                             type: selectedType,
                             region: regionController.text,
-                            countryCode: selectedCountryCode,
-                            date: selectedDate.toString(),
+                            countryId: selectedCountryCode,
+                            country: countries
+                                .firstWhere((c) => c.id == selectedCountryCode)
+                                .countryName,
+                            date: DateFormat(
+                              'yyyy-MM-dd',
+                            ).format(selectedDate!),
                             recurring: isRecurring,
+                            createdBy: 1,
                             createdAt: '',
                             updatedAt: '',
                           );
+
                           try {
-                            // ignore: unused_local_variable
                             final result = await ApiService().updateHoliday(
                               updatedHoliday,
                             );
 
                             setState(() {
-                              row.cells['name']!.value = nameController.text;
-                              row.cells['type']!.value = selectedType;
-                              row.cells['country']!.value = selectedCountryCode;
+                              row.cells['name']!.value = updatedHoliday.name;
+                              row.cells['type']!.value = updatedHoliday.type;
+                              row.cells['country']!.value = updatedHoliday
+                                  .country
+                                  .toString();
                               row.cells['region']!.value =
-                                  regionController.text;
-                              row.cells['date']!.value = selectedDate
-                                  ?.toIso8601String()
-                                  .split('T')[0];
-                              row.cells['repeat']!.value = isRecurring
+                                  updatedHoliday.region;
+                              row.cells['date']!.value = updatedHoliday.date;
+                              row.cells['repeat']!.value = updatedHoliday
+                                  .recurring
                                   .toString();
 
                               stateManager?.notifyListeners();
@@ -385,7 +405,6 @@ class TablelistState extends State<Tablelist> {
                             );
                           }
                         },
-
                         child: const Text("Submit"),
                       ),
                     ],
@@ -399,10 +418,9 @@ class TablelistState extends State<Tablelist> {
     );
   }
 
-  // Delete
   void _showDeleteDialog(PlutoRow row) {
     showDialog(
-      context: _context,
+      context: context,
       builder: (context) {
         return AlertDialog(
           backgroundColor: const Color.fromARGB(255, 93, 96, 98),
@@ -417,35 +435,39 @@ class TablelistState extends State<Tablelist> {
               color: Colors.white,
             ),
           ),
-          content: Text(
+          content: const Text(
             "Are you sure you want to delete?",
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white),
           ),
           actions: [
             TextButton(
               style: TextButton.styleFrom(foregroundColor: Colors.blue),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                Navigator.pop(context);
+              },
               child: const Text('Cancel'),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               onPressed: () async {
+                Navigator.pop(context);
+
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) =>
+                      const Center(child: CircularProgressIndicator()),
+                );
+
                 try {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) =>
-                        const Center(child: CircularProgressIndicator()),
+                  await ApiService().deleteHoliday(
+                    row.cells['id']!.value.toString(),
                   );
-
-                  await deleteHoliday(row.cells['id']!.value.toString());
-
                   stateManager?.removeRows([row]);
 
-                  Navigator.pop(context);
-                  Navigator.pop(context);
+                  Navigator.pop(_context); // close progress indicator
 
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  ScaffoldMessenger.of(_context).showSnackBar(
                     SnackBar(
                       content: Text(
                         '${row.cells['name']?.value} deleted successfully',
@@ -454,8 +476,8 @@ class TablelistState extends State<Tablelist> {
                     ),
                   );
                 } catch (e) {
-                  Navigator.pop(context); //
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  Navigator.pop(_context); // close progress indicator
+                  ScaffoldMessenger.of(_context).showSnackBar(
                     SnackBar(
                       content: Text('Failed to delete: $e'),
                       backgroundColor: Colors.red,
@@ -472,10 +494,6 @@ class TablelistState extends State<Tablelist> {
         );
       },
     );
-  }
-
-  Future<void> deleteHoliday(String id) async {
-    await ApiService().deleteHoliday(id);
   }
 
   Future<void> _loadHolidays() async {
@@ -495,7 +513,8 @@ class TablelistState extends State<Tablelist> {
               'name': PlutoCell(value: holiday.name),
 
               'type': PlutoCell(value: holiday.type),
-              'country': PlutoCell(value: holiday.countryCode),
+
+              'country': PlutoCell(value: holiday.country),
               'region': PlutoCell(value: holiday.region ?? ''),
 
               'repeat': PlutoCell(value: holiday.recurring.toString()),
