@@ -18,30 +18,38 @@ class MainScaffold extends StatelessWidget {
         title: Center(child: Text(title, style: const TextStyle(fontSize: 24))),
       ),
       drawer: Container(
-        width: MediaQuery.of(context).size.width*0.2,
+        width: MediaQuery.of(context).size.width * 0.2,
         child: Drawer(
           child: ListView(
-
-            padding: const EdgeInsets.all(8.0),        
+          
             children: [
-              SizedBox( height: 150,
-                child: const DrawerHeader( 
-                                
-                    decoration: BoxDecoration(
-                             color: Color.fromARGB(255, 104, 217, 236),
-                             ),
-                             
-                  child: Center(
-                    child: Text('Menu', style: TextStyle(fontSize: 24))),                 
+              SizedBox(
+                height: 150,
+                child: DrawerHeader(
+                  padding: EdgeInsets.zero,
+                  margin: EdgeInsets.zero,
+
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 104, 217, 236),
+                  ),
+
+                  child: Image(
+                    image: AssetImage("images/day.jpg"),
+                    width: double.infinity,
+                    height: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-               ListTile(
+              ListTile(
                 leading: Icon(Icons.table_chart),
                 title: Text('Calendar'),
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => HolidayCalendar(userData: null,)),
+                    MaterialPageRoute(
+                      builder: (context) => HolidayCalendar(userData: null),
+                    ),
                   );
                 },
               ),
@@ -51,7 +59,10 @@ class MainScaffold extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddHolidayPage(selectedDate: DateTime.now(),)),
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AddHolidayPage(selectedDate: DateTime.now()),
+                    ),
                   );
                 },
               ),
@@ -61,7 +72,9 @@ class MainScaffold extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => Tablelist(userData: null,)),
+                    MaterialPageRoute(
+                      builder: (context) => Tablelist(userData: null),
+                    ),
                   );
                 },
               ),

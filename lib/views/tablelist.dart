@@ -18,13 +18,16 @@ class Tablelist extends StatefulWidget {
 
 class TablelistState extends State<Tablelist> {
   TextEditingController _searchController = TextEditingController();
-  
+
   List<int> _selectedYears = [];
   List<String> _selectedTypes = [];
+  String? selectedDate;
+  DateTimeRange? dateRange;
   TextEditingController _yearController = TextEditingController();
   TextEditingController _typeController = TextEditingController();
   bool noHolidayFound = false;
   DateTime focusDay = DateTime(DateTime.now().year);
+
   List<int> selectedYears = [];
   List<String> selectedTypes = [];
   List<String> allTypes = ["All", "Public", "Bank", "Religious", "Observance"];
@@ -38,6 +41,7 @@ class TablelistState extends State<Tablelist> {
   List<Country> countries = [];
   bool isLoading = true;
   late BuildContext _context;
+  DateTimeRange? CustomDateRange;
   PlutoGridStateManager? stateManager;
   Key yearFieldKey = UniqueKey();
   Key typeFieldKey = UniqueKey();
@@ -57,24 +61,26 @@ class TablelistState extends State<Tablelist> {
     ];
     _loadInitialData();
   }
-Future<void> _refreshData() async {
-  setState(() {
-    selectedType= '';
-    selectedYears.clear();
-    selectedTypes.clear();
-    _searchController.clear();
-    noHolidayFound = false;
-    focusDay =DateTime.now();
-   _yearController.clear();
-  _typeController.clear();
-  _loadHolidays();
-  filteredRows =List.from(rows);
-    stateManager?.removeAllRows();
-    stateManager?.appendRows(filteredRows);
- 
-  });
-  
-}
+
+  Future<void> _refreshData() async {
+    setState(() {
+      selectedDate = null;
+      dateRange = null;
+       selectedType = '';
+      selectedYears.clear();
+      selectedTypes.clear();
+      _searchController.clear();
+      noHolidayFound = false;
+      focusDay = DateTime.now();
+      _yearController.clear();
+      _typeController.clear();
+      _loadHolidays();
+      filteredRows = List.from(rows);
+      stateManager?.removeAllRows();
+      stateManager?.appendRows(filteredRows);
+    });
+  }
+
   Future<void> _loadInitialData() async {
     try {
       countries = await ApiService().fetchCountry();
@@ -84,7 +90,8 @@ Future<void> _refreshData() async {
     } finally {
       setState(() => isLoading = false);
     }
-  } 
+  }
+
   void initColumn() {
     columns = [
       PlutoColumn(
@@ -522,7 +529,7 @@ Future<void> _refreshData() async {
                     ),
                   );
                 } catch (e) {
-                  Navigator.pop(_context); 
+                  Navigator.pop(_context);
                   ScaffoldMessenger.of(_context).showSnackBar(
                     SnackBar(
                       content: Text('Failed to delete: $e'),
@@ -576,17 +583,45 @@ Future<void> _refreshData() async {
     }
   }
 
+  // void _filterRowsByMultiTypeInYear(List<int> targetYears) {
+  //   if (targetYears.isEmpty) {
+  //     stateManager?.removeAllRows();
+  //     stateManager?.appendRows(filteredRows); // Restore all rows
+  //     noHolidayFound = false;
+  //     return;
+  //   }
 
-      void _filterRowsByMultiTypeInYear(List<int> targetYears) {
-  if (targetYears.isEmpty) {
-    stateManager?.removeAllRows();
-    stateManager?.appendRows(rows); // Restore all rows
-    noHolidayFound = false;
-    return;
-  }
+  //   List<PlutoRow> filtered = rows.where((row) {
+  //     final type =
+  //         row.cells['type']?.value?.toString().toLowerCase().trim() ?? '';
+  //     final dateStr = row.cells['date']?.value?.toString();
 
+  //     if (dateStr == null) return false;
+
+  //     DateTime date;
+  //     try {
+  //       date = DateTime.parse(dateStr);
+  //     } catch (_) {
+  //       return false;
+  //     }
+
+  //     final matchYear = targetYears.contains(date.year);
+  //     final matchType =
+  //         selectedTypes.isEmpty ||
+  //         selectedTypes.map((e) => e.toLowerCase().trim()).contains(type);
+
+  //     return matchYear && matchType;
+  //   }).toList();
+
+  //   stateManager?.removeAllRows();
+  //   stateManager?.appendRows(filtered);
+  //   noHolidayFound = filtered.isEmpty;
+  //   setState(() {});
+  // }
+  void _filterRowsByMultiTypeInYearAndType() {
   List<PlutoRow> filtered = rows.where((row) {
-    final type = row.cells['type']?.value?.toString().toLowerCase().trim() ?? '';
+    final type =
+        row.cells['type']?.value?.toString().toLowerCase().trim() ?? '';
     final dateStr = row.cells['date']?.value?.toString();
 
     if (dateStr == null) return false;
@@ -598,7 +633,7 @@ Future<void> _refreshData() async {
       return false;
     }
 
-    final matchYear = targetYears.contains(date.year);
+    final matchYear = selectedYears.isEmpty || selectedYears.contains(date.year);
     final matchType = selectedTypes.isEmpty ||
         selectedTypes.map((e) => e.toLowerCase().trim()).contains(type);
 
@@ -620,25 +655,185 @@ Future<void> _refreshData() async {
 
       final lowerQuery = query.toLowerCase();
       return row.cells['name']!.value.toString().toLowerCase().contains(
-            lowerQuery,
+        lowerQuery,
       );
-          // ) ||
-          // row.cells['type']!.value.toString().toLowerCase().contains(
-          //   lowerQuery,
-          // ) ||
-          // row.cells['country']!.value.toString().toLowerCase().contains(
-          //   lowerQuery,
-          // ) ||
-          // row.cells['region']!.value.toString().toLowerCase().contains(
-          //   lowerQuery,
-          // ) ||
-          // row.cells['date']!.value.toString().toLowerCase().contains(
-          //   lowerQuery,
-          // ) ||
-          // row.cells['repeat']!.value.toString().toLowerCase().contains(
-          //   lowerQuery,
-          // );
+     
     });
+  }
+
+  
+    String _getDateFilterDisplayName(String value) {
+    switch (value) {
+      case 'today':
+        return 'Today';
+      case 'this_week':
+        return 'This week';
+      case 'this_month':
+        return 'This month';
+      case 'this_year':
+        return 'This year';
+      case 'custom_date':
+        return 'Custom Date';
+
+      default:
+        return value.isNotEmpty ? value : 'Select Date';
+    }
+  }
+
+  String _getThisWeekRange() {
+    final now = DateTime.now();
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final endOfWeek = startOfWeek.add(const Duration(days: 6));
+    return '${DateFormat.yMd().format(startOfWeek)} - ${DateFormat.yMd().format(endOfWeek)}';
+  }
+
+  String _getThisMonthRange() {
+    final now = DateTime.now();
+    DateTime startOfMonth = DateTime(now.year, now.month, 1);
+    DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);
+    return '${DateFormat.yMd().format(startOfMonth)} - ${DateFormat.yMd().format(endOfMonth)}';
+  }
+
+  void _filterByPresentDate(String filterType) {
+    final now = DateTime.now();
+    DateTimeRange? dateRange;
+    switch (filterType) {
+      case 'today':
+        dateRange = DateTimeRange(start: now, end: now);
+        break;
+      case 'this_week':
+        DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+        DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
+        dateRange = DateTimeRange(start: startOfWeek, end: endOfWeek);
+        break;
+      case 'this_month':
+        DateTime startOfMonth = DateTime(now.year, now.month, 1);
+        DateTime endOfMonth = DateTime(now.year, now.month + 1, 0);
+        dateRange = DateTimeRange(start: startOfMonth, end: endOfMonth);
+        break;
+      default:
+        return;
+    }
+    if (dateRange != null) {
+      setState(() {
+        selectedDate = filterType;
+      });
+      _filterByCustomDate(dateRange);
+    }
+  }
+
+  void _filterByCustomDate(DateTimeRange dateRange) {
+    filteredRows = rows.where((row) {
+      final dateStr = row.cells['date']?.value?.toString();
+      if (dateStr == null) return false;
+
+      DateTime date;
+      try {
+        date = DateTime.parse(dateStr);
+      } catch (_) {
+        return false;
+      }
+
+      return date.isAfter(dateRange.start.subtract(const Duration(days: 1))) &&
+          date.isBefore(dateRange.end.add(const Duration(days: 1)));
+    }).toList();
+
+    stateManager?.removeAllRows();
+    stateManager?.appendRows(filteredRows);
+    noHolidayFound = filteredRows.isEmpty;
+    setState(() {});
+  }
+
+  void _showCustomDateRangeDialog(BuildContext context) {
+    DateTime initialStartDate = DateTime.now();
+    DateTime initialEndDate = DateTime.now();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Choose Custom Date"),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text("Select Start Date: "),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () async {
+                      DateTime? chooseStartDate = await showDatePicker(
+                        context: context,
+                        initialDate: initialStartDate,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(3000),
+                      );
+
+                      if (chooseStartDate != null) {
+                        setState(() {
+                          initialStartDate = chooseStartDate;
+                        });
+                      }
+                    },
+                    child: Text(DateFormat.yMd().format(initialStartDate)),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text('Select End Date: '),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () async {
+                      DateTime? chooseEndDate = await showDatePicker(
+                        context: context,
+                        initialDate: initialEndDate,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(3000),
+                      );
+                      if (chooseEndDate != null) {
+                        setState(() {
+                          initialEndDate = chooseEndDate;
+                        });
+                      }
+                    },
+                    child: Text(DateFormat.yMd().format(initialEndDate)),
+                  ),
+                ],
+              );
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                if (initialStartDate.isBefore(initialEndDate) ||
+                    initialStartDate.isAtSameMomentAs(initialEndDate)) {
+                  setState(() {
+                    CustomDateRange = DateTimeRange(
+                      start: initialStartDate,
+                      end: initialEndDate,
+                    );
+                    selectedDate = 'custom_date';
+                  });
+                  _filterByCustomDate(CustomDateRange!);
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Please choose available Dates."),
+                    ),
+                  );
+                }
+              },
+              child: const Text("Apply"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -653,74 +848,118 @@ Future<void> _refreshData() async {
       body: Container(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          children: [            
+          children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
+
               children: [
+                DropdownButton<String>(
+                  value: selectedDate,
+                  hint: Text("Filter Date",style:TextStyle(fontSize: 14,color: Colors.black)),
+                  items: [
+                    DropdownMenuItem(
+                      value: 'today',
+                      child: Tooltip(
+                        message: DateFormat.yMd().format(DateTime.now()),
+                        child: Text('Today',style: TextStyle(fontSize: 14),),
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'this_week',
+                      child: Tooltip(
+                        message: _getThisWeekRange(),
+                        child: const Text('This Week',style: TextStyle(fontSize: 14),),
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'this_month',
+                      child: Tooltip(
+                        message: _getThisMonthRange(),
+                        child: const Text('This Month',style: TextStyle(fontSize: 14),),
+                      ),
+                    ),
+                    DropdownMenuItem(
+                      value: 'custom_date',
+                      child: Tooltip(
+                        message: CustomDateRange != null
+                            ? '${DateFormat.yMd().format(CustomDateRange!.start)} - ${DateFormat.yMd().format(CustomDateRange!.end)}'
+                            : 'Choose a Custom Date Range',
+                        child: const Text('Custom Date',style: TextStyle(fontSize: 14),),
+                      ),
+                    ),
+                  ],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      selectedDate = newValue!;
+                      if (newValue == 'custom_date') {
+                        _showCustomDateRangeDialog(context);
+                      } else if (newValue != null) {
+                        _filterByPresentDate(newValue);
+                      }
+                    });
+                  },
+                ),
                 Padding(
                   padding: EdgeInsets.all(16.0),
-                  child:MultiSelectDialogField<int>(
+                  child: MultiSelectDialogField<int>(
                     initialValue: _selectedYears,
                     items: List.generate(3, (index) {
                       int year = DateTime.now().year - 1 + index;
-                      return MultiSelectItem<int>(year,'$year');
-                      
+                      return MultiSelectItem<int>(year, '$year');
                     }),
                     title: Text("Select Years"),
-                    dialogHeight: 250,dialogWidth: 100,
-                    buttonText: Text("Select Years"),
-                    // initialValue: selectedYears,
+                    dialogHeight: 180,
+                    dialogWidth: 100,
+                    buttonText: Text("Select Years",),
                     listType: MultiSelectListType.LIST,
-                    onConfirm: (values){
-                      setState(() {
-                        selectedYears=values;
-                      });
-                    if (selectedYears.isNotEmpty) {
-                       _filterRowsByMultiTypeInYear(selectedYears);
+                    buttonIcon: Icon(
+                      Icons.arrow_drop_down,
                       
+                      color: Colors.black,
+                    ),
+                    onConfirm: (values) {
+                      setState(() {
+                        selectedYears = values;
+                      });
+                      if (selectedYears.isNotEmpty) {
+                        _filterRowsByMultiTypeInYearAndType();
+                      }
                     }
-                     }
                   ),
                 ),
 
-                SizedBox(width: 40),
+                SizedBox(width: 10),
                 MultiSelectDialogField<String>(
                   initialValue: _selectedTypes,
                   items: allTypes
                       .map((type) => MultiSelectItem<String>(type, type))
                       .toList(),
-                  title: const Text("Select Types"),
-                  dialogWidth: 100,dialogHeight: 250,
+                  title: const Text("Select Types",),
+                  dialogWidth: 100,
+                  dialogHeight: 180,
                   buttonText: const Text("Select Types"),
-                  // initialValue: selectedTypes,
+                  
                   listType: MultiSelectListType.LIST,
+                  buttonIcon: Icon(
+                    Icons.arrow_drop_down,
+                    // size: 30,
+                    color:Colors.black,
+                  ),
                   onConfirm: (values) {
                     setState(() {
                       selectedTypes = values;
                     });
-                    if (selectedYears.isNotEmpty) {
-                      _filterRowsByMultiTypeInYear(selectedYears);
+                    if (selectedTypes.isNotEmpty) {
+                     _filterRowsByMultiTypeInYearAndType();
                     }
                   },
-                  
                 ),
-                if (selectedYears.isNotEmpty || selectedTypes.isNotEmpty)
-                IconButton(
-                  onPressed: _refreshData,
-                  icon: const Icon(Icons.close),
-                  tooltip: "Clear filter",
-                ),
-                IconButton(
-                onPressed: _refreshData,
-                icon: const Icon(Icons.refresh),
-                tooltip: "Reset all & reload data",
-              ),
 
-              SizedBox(width: 30,),
+                SizedBox(width: 50),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    width: MediaQuery.of(context).size.width * 0.4,
+                    width: MediaQuery.of(context).size.width * 0.3,
                     height: 50,
                     decoration: BoxDecoration(
                       border: Border.all(
@@ -738,7 +977,6 @@ Future<void> _refreshData() async {
                           },
                         ),
                         Expanded(
-                        
                           child: TextField(
                             controller: _searchController,
                             onChanged: _searchData,
@@ -758,7 +996,7 @@ Future<void> _refreshData() async {
                           IconButton(
                             icon: const Icon(
                               Icons.clear,
-                              color: Colors.black54,
+                              color:Colors.black,
                               size: 20,
                             ),
                             onPressed: () {
@@ -767,27 +1005,44 @@ Future<void> _refreshData() async {
                             },
                           ),
                       ],
-                      
                     ),
-                    
                   ),
                 ),
-                SizedBox(width: 30),
-                 ElevatedButton(
-                  onPressed: () {
-                    // Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            AddHolidayPage(selectedDate: DateTime.now()),
+                SizedBox(width: 50),
+                Container(
+                  // padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: EdgeInsets.only(right: 0.8),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 155, 223, 228),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: _refreshData,
+                        icon: const Icon(Icons.refresh),
+                        tooltip: "Reset all & reload data",
                       ),
-                    );
-                  },
-                  child: Text("Add Holiday"),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.black,
+                          // size: 20,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AddHolidayPage(selectedDate: DateTime.now()),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-
-                
               ],
             ),
             SizedBox(height: 20),
@@ -810,14 +1065,14 @@ Future<void> _refreshData() async {
                 ),
               ),
             ),
-            if(noHolidayFound)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                "No holiday found.",
-                style: TextStyle(fontSize: 16, color: Colors.red),
+            if (noHolidayFound)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  "No holiday found.",
+                  style: TextStyle(fontSize: 16, color: Colors.red),
+                ),
               ),
-            ),
           ],
         ),
       ),
